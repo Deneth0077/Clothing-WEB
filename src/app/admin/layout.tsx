@@ -57,6 +57,43 @@ export default function AdminLayout({ children }: { children: React.ReactNode })
   const [userDropdownOpen, setUserDropdownOpen] = useState(false);
   const [isDarkMode, setIsDarkMode] = useState(false);
 
+  // Sync theme with localStorage and document.documentElement
+  useEffect(() => {
+    try {
+      const savedTheme = localStorage.getItem("tbh_admin_theme");
+      if (savedTheme === "dark") {
+        setIsDarkMode(true);
+        document.documentElement.classList.add("dark");
+      } else if (savedTheme === "light") {
+        setIsDarkMode(false);
+        document.documentElement.classList.remove("dark");
+      } else if (window.matchMedia && window.matchMedia("(prefers-color-scheme: dark)").matches) {
+        setIsDarkMode(true);
+        document.documentElement.classList.add("dark");
+      }
+    } catch {
+      // safe fallback
+    }
+  }, []);
+
+  const handleToggleTheme = () => {
+    setIsDarkMode((prev) => {
+      const next = !prev;
+      try {
+        if (next) {
+          document.documentElement.classList.add("dark");
+          localStorage.setItem("tbh_admin_theme", "dark");
+        } else {
+          document.documentElement.classList.remove("dark");
+          localStorage.setItem("tbh_admin_theme", "light");
+        }
+      } catch {
+        // safe fallback
+      }
+      return next;
+    });
+  };
+
   const isLoginPage = pathname?.startsWith("/admin/login");
   const isBrandManager = user?.role === "brand_manager" || user?.role === "vendor";
   const brandSlug = user?.brandSlug || "";
@@ -106,19 +143,27 @@ export default function AdminLayout({ children }: { children: React.ReactNode })
   }
 
   return (
-    <div className="min-h-screen bg-[#eceff3] text-neutral-900 antialiased flex flex-col relative overflow-x-hidden">
+    <div
+      className={`admin-root min-h-screen antialiased flex flex-col relative overflow-x-hidden transition-colors duration-200 ${
+        isDarkMode ? "dark bg-[#0b0d13] text-[#f1f5f9]" : "bg-[#eceff3] text-neutral-900"
+      }`}
+    >
       {/* Left Floating Slim Action Dock (Separate & Vertically Centered on Screen) */}
       <aside className="hidden md:flex flex-col items-center bg-white border border-neutral-300/90 shadow-[0_4px_24px_rgba(0,0,0,0.06)] rounded-3xl py-3 px-1.5 w-14 sm:w-16 fixed left-3 sm:left-5 top-1/2 -translate-y-1/2 z-40 overflow-hidden">
         {/* Top: Day/Night Single Toggle Button */}
         <div className="flex flex-col items-center pb-2 border-b border-neutral-100 w-full">
           <button
             type="button"
-            onClick={() => setIsDarkMode(!isDarkMode)}
-            className="w-7 h-7 rounded-full bg-neutral-100 hover:bg-neutral-200 text-neutral-600 hover:text-black flex items-center justify-center transition-colors cursor-pointer"
-            title={isDarkMode ? "Light Mode" : "Dark Mode"}
+            onClick={handleToggleTheme}
+            className={`w-7 h-7 rounded-full flex items-center justify-center transition-all cursor-pointer ${
+              isDarkMode
+                ? "bg-amber-400/20 text-amber-300 hover:bg-amber-400/30 ring-1 ring-amber-400/30 shadow-xs"
+                : "bg-neutral-100 hover:bg-neutral-200 text-neutral-600 hover:text-black"
+            }`}
+            title={isDarkMode ? "Switch to Light Mode" : "Switch to Dark Mode"}
           >
             {isDarkMode ? (
-              <Moon className="w-3.5 h-3.5 text-neutral-800" />
+              <Moon className="w-3.5 h-3.5 text-amber-300 fill-amber-300/40" />
             ) : (
               <Sun className="w-3.5 h-3.5 text-amber-500" />
             )}
@@ -174,7 +219,7 @@ export default function AdminLayout({ children }: { children: React.ReactNode })
           {/* Left: TBH Brand Logo Capsule (Aligned with 'G' of Good morning) */}
           <div className="flex items-center gap-3">
             <div className="bg-white border border-neutral-300 shadow-xs px-4 py-2 rounded-full flex items-center hover:border-black transition-colors">
-              <SiteLogo />
+              <SiteLogo variant={isDarkMode ? "light" : "dark"} />
               {isBrandManager && (
                 <span className="text-[10px] font-mono font-bold uppercase tracking-wider text-neutral-500 ml-2 pl-2 border-l border-neutral-200">
                   {brandSlug}
@@ -197,8 +242,26 @@ export default function AdminLayout({ children }: { children: React.ReactNode })
 
           {/* Right: Quick Action Controls & User Profile (Unified Single Capsule) */}
           <div className="flex items-center gap-2 sm:gap-3">
-            {/* Single Capsule containing Notification Icon and Login Profile Avatar */}
-            <div className="flex items-center bg-white border border-neutral-300 shadow-xs rounded-full px-2.5 py-1.5 gap-2.5 relative">
+            {/* Single Capsule containing Theme Toggle, Notification Icon and Login Profile Avatar */}
+            <div className="flex items-center bg-white border border-neutral-300 shadow-xs rounded-full px-2.5 py-1.5 gap-2 relative">
+              {/* Day / Night Toggle */}
+              <button
+                type="button"
+                onClick={handleToggleTheme}
+                className={`p-1 rounded-full transition-colors cursor-pointer ${
+                  isDarkMode
+                    ? "text-amber-300 hover:bg-neutral-800"
+                    : "text-neutral-600 hover:text-black hover:bg-neutral-100"
+                }`}
+                title={isDarkMode ? "Switch to Light Mode" : "Switch to Dark Mode"}
+              >
+                {isDarkMode ? (
+                  <Moon className="w-3.5 h-3.5 text-amber-300 fill-amber-300/30" />
+                ) : (
+                  <Sun className="w-3.5 h-3.5 text-amber-500" />
+                )}
+              </button>
+
               {/* Notification Button */}
               <button
                 type="button"

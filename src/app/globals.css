@@ -1,5 +1,7 @@
 @import "tailwindcss";
 
+@custom-variant dark (&:where(.dark, .dark *));
+
 :root {
   --background: #ffffff;
   --foreground: #111111;
@@ -34,6 +36,19 @@ body {
   background: #555555;
 }
 
+.dark ::-webkit-scrollbar-track {
+  background: #0f1218;
+}
+
+.dark ::-webkit-scrollbar-thumb {
+  background: #2a3142;
+  border-radius: 3px;
+}
+
+.dark ::-webkit-scrollbar-thumb:hover {
+  background: #3f4961;
+}
+
 /* Subtle image zoom transition */
 .image-zoom-container {
   overflow: hidden;
@@ -52,4 +67,242 @@ body {
   .text-balance {
     text-wrap: balance;
   }
+}
+
+/* ==========================================================================
+   ADMIN SYSTEM COMPREHENSIVE DARK THEME STYLING
+   Applies cleanly to all console views when .dark is active
+   ========================================================================== */
+
+.dark .admin-root {
+  background-color: #0b0d13 !important;
+  color: #f1f5f9 !important;
+}
+
+.dark .admin-root header {
+  background-color: rgba(11, 13, 19, 0.88) !important;
+  border-color: rgba(255, 255, 255, 0.08) !important;
+}
+
+.dark .admin-root aside {
+  background-color: #131722 !important;
+  border-color: #23293a !important;
+  box-shadow: 0 8px 32px rgba(0, 0, 0, 0.5) !important;
+}
+
+/* Capsules (Logo, Search, Profile, Clock) */
+.dark .admin-root header .bg-white,
+.dark .admin-root .admin-capsule {
+  background-color: #171b26 !important;
+  border-color: #272e42 !important;
+  color: #f1f5f9 !important;
+}
+
+.dark .admin-root header input {
+  color: #f1f5f9 !important;
+}
+
+.dark .admin-root header input::placeholder {
+  color: #64748b !important;
+}
+
+/* Bento Containers, Panels & White Card Blocks */
+.dark .admin-root div.bg-white,
+.dark .admin-root section.bg-white,
+.dark .admin-root article.bg-white {
+  background-color: #131722 !important;
+  border-color: #23293a !important;
+  color: #f1f5f9 !important;
+}
+
+/* Inner containers and secondary backgrounds */
+.dark .admin-root .bg-neutral-50,
+.dark .admin-root .bg-neutral-50\/70,
+.dark .admin-root .bg-neutral-50\/60,
+.dark .admin-root .bg-neutral-50\/50,
+.dark .admin-root .bg-neutral-50\/40,
+.dark .admin-root .bg-neutral-50\/20,
+.dark .admin-root .bg-neutral-100,
+.dark .admin-root .bg-neutral-100\/80,
+.dark .admin-root .bg-neutral-100\/60 {
+  background-color: #181d2a !important;
+  border-color: #272e42 !important;
+  color: #f1f5f9 !important;
+}
+
+/* Typography Hierarchy */
+.dark .admin-root .text-neutral-900,
+.dark .admin-root .text-black,
+.dark .admin-root h1,
+.dark .admin-root h2,
+.dark .admin-root h3,
+.dark .admin-root h4 {
+  color: #f8fafc !important;
+}
+
+.dark .admin-root .text-neutral-800 {
+  color: #e2e8f0 !important;
+}
+
+.dark .admin-root .text-neutral-700 {
+  color: #cbd5e1 !important;
+}
+
+.dark .admin-root .text-neutral-600 {
+  color: #94a3b8 !important;
+}
+
+.dark .admin-root .text-neutral-500 {
+  color: #64748b !important;
+}
+
+.dark .admin-root .text-neutral-400 {
+  color: #475569 !important;
+}
+
+/* Borders & Dividers */
+.dark .admin-root .border-neutral-200,
+.dark .admin-root .border-neutral-300,
+.dark .admin-root .border-neutral-200\/90,
+.dark .admin-root .border-neutral-200\/80,
+.dark .admin-root .border-neutral-200\/60,
+.dark .admin-root .border-neutral-100 {
+  border-color: #23293a !important;
+}
+
+.dark .admin-root .divide-neutral-100 > *,
+.dark .admin-root .divide-neutral-200 > * {
+  border-color: #23293a !important;
+}
+
+/* Form Controls: Inputs, Selects, Textareas */
+.dark .admin-root input,
+.dark .admin-root select,
+.dark .admin-root textarea {
+  background-color: #181d2a !important;
+  border-color: #2c344a !important;
+  color: #f8fafc !important;
+}
+
+.dark .admin-root input:focus,
+.dark .admin-root select:focus,
+.dark .admin-root textarea:focus {
+  border-color: #f59e0b !important;
+}
+
+.dark .admin-root select option {
+  background-color: #131722 !important;
+  color: #f8fafc !important;
+}
+
+/* Tables */
+.dark .admin-root table {
+  background-color: #131722 !important;
+  color: #e2e8f0 !important;
+}
+
+.dark .admin-root thead {
+  background-color: #0d1017 !important;
+  color: #94a3b8 !important;
+  border-color: #23293a !important;
+}
+
+.dark .admin-root tbody tr:hover {
+  background-color: rgba(30, 37, 52, 0.5) !important;
+}
+
+/* Modals & Overlays */
+.dark .admin-root .fixed.inset-0 .bg-white {
+  background-color: #131722 !important;
+  border-color: #272e42 !important;
+  color: #f8fafc !important;
+  box-shadow: 0 20px 48px rgba(0, 0, 0, 0.75) !important;
+}
+
+/* Buttons */
+/* Primary Action Buttons */
+.dark .admin-root button.bg-neutral-900,
+.dark .admin-root button.bg-black,
+.dark .admin-root a.bg-neutral-900,
+.dark .admin-root a.bg-black {
+  background-color: #f8fafc !important;
+  color: #0b0d13 !important;
+  border-color: #f8fafc !important;
+}
+
+.dark .admin-root button.bg-neutral-900:hover,
+.dark .admin-root button.bg-black:hover,
+.dark .admin-root a.bg-neutral-900:hover,
+.dark .admin-root a.bg-black:hover {
+  background-color: #e2e8f0 !important;
+}
+
+.dark .admin-root button.bg-neutral-900 svg,
+.dark .admin-root button.bg-black svg,
+.dark .admin-root a.bg-neutral-900 svg,
+.dark .admin-root a.bg-black svg {
+  color: #0b0d13 !important;
+}
+
+/* White/Neutral Secondary Buttons */
+.dark .admin-root button.bg-white,
+.dark .admin-root a.bg-white {
+  background-color: #1c2230 !important;
+  border-color: #2c344a !important;
+  color: #f1f5f9 !important;
+}
+
+.dark .admin-root button.bg-white:hover,
+.dark .admin-root a.bg-white:hover {
+  background-color: #242c3e !important;
+}
+
+/* Floating slim dock navigation */
+.dark .admin-root aside nav a.bg-black {
+  background-color: #ffffff !important;
+  color: #0b0d13 !important;
+}
+
+.dark .admin-root aside nav a.text-neutral-400:hover {
+  color: #ffffff !important;
+  background-color: #1c2230 !important;
+}
+
+/* Coupon ticket card cutouts in dark mode */
+.dark .admin-root .rounded-full.bg-neutral-50\/90,
+.dark .admin-root .rounded-full.bg-neutral-100 {
+  background-color: #0b0d13 !important;
+  border-color: #23293a !important;
+}
+
+/* Badges and Chips in Dark Mode */
+.dark .admin-root .bg-emerald-50 {
+  background-color: rgba(16, 185, 129, 0.15) !important;
+  color: #34d399 !important;
+  border-color: rgba(16, 185, 129, 0.3) !important;
+}
+
+.dark .admin-root .bg-amber-50 {
+  background-color: rgba(245, 158, 11, 0.15) !important;
+  color: #fbbf24 !important;
+  border-color: rgba(245, 158, 11, 0.3) !important;
+}
+
+.dark .admin-root .bg-rose-50 {
+  background-color: rgba(244, 63, 94, 0.15) !important;
+  color: #fb7185 !important;
+  border-color: rgba(244, 63, 94, 0.3) !important;
+}
+
+.dark .admin-root .bg-blue-50,
+.dark .admin-root .bg-sky-50 {
+  background-color: rgba(59, 130, 246, 0.15) !important;
+  color: #60a5fa !important;
+  border-color: rgba(59, 130, 246, 0.3) !important;
+}
+
+.dark .admin-root .bg-purple-50 {
+  background-color: rgba(168, 85, 247, 0.15) !important;
+  color: #c084fc !important;
+  border-color: rgba(168, 85, 247, 0.3) !important;
 }
