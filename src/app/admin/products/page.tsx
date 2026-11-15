@@ -1572,7 +1572,7 @@ export default function AdminProductsPage() {
               <div className="flex items-center gap-2 border-b border-neutral-100 mt-4 overflow-x-auto pb-2 scrollbar-none">
                 {[
                   { id: "basic", label: "1. Info & Category" },
-                  { id: "media", label: `2. Cloudinary Images (${images.length})` },
+                  { id: "media", label: "2. Cloudinary Images" },
                   { id: "pricing", label: "3. Pricing & Stock" },
                   { id: "variants", label: "4. Sizes, Colors & AI" },
                 ].map((tab) => (
@@ -1770,7 +1770,7 @@ export default function AdminProductsPage() {
                   {/* Gallery Thumbnails */}
                   <div>
                     <span className="font-bold text-neutral-700 block mb-2">
-                      Current Gallery ({images.length} images) — Click star to set Cover Image
+                      Current Gallery — Click star to set Cover Image
                     </span>
 
                     {images.length === 0 ? (
