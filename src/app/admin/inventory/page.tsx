@@ -29,29 +29,6 @@ import { IProduct } from "@/types";
 import { useAuth } from "@/context/AuthContext";
 import { toast } from "sonner";
 
-// Decorative SVG wave for Stat Cards
-function StatWave({ color = "#3b82f6" }: { color?: string }) {
-  return (
-    <svg
-      className="w-20 sm:w-24 h-10 opacity-70 shrink-0 self-end -mb-1 -mr-1"
-      viewBox="0 0 100 40"
-      fill="none"
-    >
-      <path
-        d="M0 35 Q 25 15, 50 26 T 100 12 L 100 40 L 0 40 Z"
-        fill={color}
-        fillOpacity="0.18"
-      />
-      <path
-        d="M0 35 Q 25 15, 50 26 T 100 12"
-        stroke={color}
-        strokeWidth="2.5"
-        strokeLinecap="round"
-      />
-    </svg>
-  );
-}
-
 export default function AdminInventoryPage() {
   const { user } = useAuth();
   const isBrandManager = user?.role === "brand_manager" || user?.role === "vendor";
@@ -191,10 +168,19 @@ export default function AdminInventoryPage() {
     );
   };
 
-  // Stock Adjustment Handler
+  // Stock Adjustment Handler (1 by 1 Decrease or Increase with Optimistic UI)
   const handleStockAdjustment = async (p: IProduct, delta: number) => {
-    const newStock = Math.max(0, (p.stock || 0) + delta);
-    const toastId = toast.loading(`Updating ${p.sku} stock to ${newStock}...`);
+    const prevStock = p.stock || 0;
+    const newStock = Math.max(0, prevStock + delta);
+    if (newStock === prevStock) return;
+
+    // Optimistic UI update
+    setProducts((prev) =>
+      prev.map((item) =>
+        item._id === p._id || item.sku === p.sku ? { ...item, stock: newStock } : item
+      )
+    );
+
     try {
       const id = p._id || p.slug;
       const res = await fetch(`/api/products/${id}`, {
@@ -202,18 +188,17 @@ export default function AdminInventoryPage() {
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify({ stock: newStock }),
       });
-      if (res.ok) {
-        toast.success(`Updated stock for ${p.name} to ${newStock} units`, { id: toastId });
-        setProducts((prev) =>
-          prev.map((item) =>
-            item._id === p._id || item.sku === p.sku ? { ...item, stock: newStock } : item
-          )
-        );
-      } else {
-        toast.error("Failed to update stock", { id: toastId });
+      if (!res.ok) {
+        throw new Error("Failed to update stock");
       }
     } catch {
-      toast.error("Network error while updating stock", { id: toastId });
+      // Rollback on failure
+      setProducts((prev) =>
+        prev.map((item) =>
+          item._id === p._id || item.sku === p.sku ? { ...item, stock: prevStock } : item
+        )
+      );
+      toast.error(`Failed to update stock for ${p.name}`);
     }
   };
 
@@ -341,10 +326,10 @@ export default function AdminInventoryPage() {
           </div>
         </div>
 
-        {/* 2. Four KPI Bento Stat Cards with REAL Data */}
+        {/* 2. Four KPI Bento Stat Cards with REAL Data (No decorative waves) */}
         <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-3.5">
           {/* Card 1: Total Products */}
-          <div className="bg-gradient-to-r from-blue-50/40 via-white to-white border border-neutral-200/90 rounded-2xl p-4 flex items-center justify-between gap-2 shadow-2xs hover:shadow-xs transition-shadow overflow-hidden">
+          <div className="bg-white border border-neutral-200/90 rounded-2xl p-4 flex items-center justify-between gap-2 shadow-2xs hover:shadow-xs transition-shadow">
             <div className="flex items-center gap-3">
               <div className="w-10 h-10 rounded-xl bg-blue-50 border border-blue-100 flex items-center justify-center text-blue-600 shrink-0">
                 <Package className="w-5 h-5" />
@@ -360,11 +345,10 @@ export default function AdminInventoryPage() {
                 </div>
               </div>
             </div>
-            <StatWave color="#3b82f6" />
           </div>
 
           {/* Card 2: In Stock */}
-          <div className="bg-gradient-to-r from-emerald-50/40 via-white to-white border border-neutral-200/90 rounded-2xl p-4 flex items-center justify-between gap-2 shadow-2xs hover:shadow-xs transition-shadow overflow-hidden">
+          <div className="bg-white border border-neutral-200/90 rounded-2xl p-4 flex items-center justify-between gap-2 shadow-2xs hover:shadow-xs transition-shadow">
             <div className="flex items-center gap-3">
               <div className="w-10 h-10 rounded-xl bg-emerald-50 border border-emerald-100 flex items-center justify-center text-emerald-600 shrink-0">
                 <Layers className="w-5 h-5" />
@@ -383,11 +367,10 @@ export default function AdminInventoryPage() {
                 </div>
               </div>
             </div>
-            <StatWave color="#10b981" />
           </div>
 
           {/* Card 3: Low Stock */}
-          <div className="bg-gradient-to-r from-amber-50/40 via-white to-white border border-neutral-200/90 rounded-2xl p-4 flex items-center justify-between gap-2 shadow-2xs hover:shadow-xs transition-shadow overflow-hidden">
+          <div className="bg-white border border-neutral-200/90 rounded-2xl p-4 flex items-center justify-between gap-2 shadow-2xs hover:shadow-xs transition-shadow">
             <div className="flex items-center gap-3">
               <div className="w-10 h-10 rounded-xl bg-amber-50 border border-amber-100 flex items-center justify-center text-amber-600 shrink-0">
                 <AlertTriangle className="w-5 h-5" />
@@ -406,11 +389,10 @@ export default function AdminInventoryPage() {
                 </div>
               </div>
             </div>
-            <StatWave color="#f59e0b" />
           </div>
 
           {/* Card 4: Out of Stock */}
-          <div className="bg-gradient-to-r from-rose-50/40 via-white to-white border border-neutral-200/90 rounded-2xl p-4 flex items-center justify-between gap-2 shadow-2xs hover:shadow-xs transition-shadow overflow-hidden">
+          <div className="bg-white border border-neutral-200/90 rounded-2xl p-4 flex items-center justify-between gap-2 shadow-2xs hover:shadow-xs transition-shadow">
             <div className="flex items-center gap-3">
               <div className="w-10 h-10 rounded-xl bg-rose-50 border border-rose-100 flex items-center justify-center text-rose-600 shrink-0">
                 <XCircle className="w-5 h-5" />
@@ -429,7 +411,6 @@ export default function AdminInventoryPage() {
                 </div>
               </div>
             </div>
-            <StatWave color="#f43f5e" />
           </div>
         </div>
 
@@ -635,34 +616,28 @@ export default function AdminInventoryPage() {
                           )}
                         </td>
 
-                        {/* Adjust Quantity Buttons */}
+                        {/* Adjust Quantity Buttons (1 by 1 Decrease / Increase) */}
                         <td className="py-3.5 px-4 text-right">
                           <div className="inline-flex items-center gap-1.5 justify-end">
                             <button
                               type="button"
                               onClick={() => handleStockAdjustment(p, -1)}
-                              className="w-7 h-7 rounded-xl bg-neutral-100 hover:bg-neutral-200 text-neutral-700 flex items-center justify-center transition-colors cursor-pointer"
-                              title="Decrease 1 unit"
+                              disabled={stock <= 0}
+                              className="px-2.5 h-8 rounded-xl bg-neutral-100 hover:bg-neutral-200 text-neutral-800 disabled:opacity-30 disabled:cursor-not-allowed flex items-center gap-1 transition-colors cursor-pointer font-bold text-xs"
+                              title="Decrease 1 unit (-1)"
                             >
                               <Minus className="w-3 h-3" />
+                              <span>1</span>
                             </button>
 
                             <button
                               type="button"
-                              onClick={() => handleStockAdjustment(p, 5)}
-                              className="px-2.5 py-1 rounded-xl bg-neutral-100 hover:bg-neutral-200 text-neutral-900 font-bold text-xs transition-colors cursor-pointer"
-                              title="Add 5 units"
+                              onClick={() => handleStockAdjustment(p, 1)}
+                              className="px-2.5 h-8 rounded-xl bg-neutral-900 text-white hover:bg-neutral-800 flex items-center gap-1 transition-colors cursor-pointer font-bold text-xs shadow-2xs"
+                              title="Increase 1 unit (+1)"
                             >
-                              +5
-                            </button>
-
-                            <button
-                              type="button"
-                              onClick={() => handleStockAdjustment(p, 10)}
-                              className="px-3 py-1 rounded-xl bg-neutral-900 text-white hover:bg-neutral-800 font-bold text-xs transition-colors cursor-pointer shadow-2xs"
-                              title="Add 10 units"
-                            >
-                              +10
+                              <Plus className="w-3 h-3" />
+                              <span>1</span>
                             </button>
                           </div>
                         </td>
@@ -741,23 +716,21 @@ export default function AdminInventoryPage() {
                       <button
                         type="button"
                         onClick={() => handleStockAdjustment(p, -1)}
-                        className="w-7 h-7 rounded-lg bg-neutral-100 hover:bg-neutral-200 text-neutral-700 flex items-center justify-center font-bold text-xs"
+                        disabled={stock <= 0}
+                        className="px-2.5 h-7 rounded-lg bg-neutral-100 hover:bg-neutral-200 text-neutral-800 disabled:opacity-30 disabled:cursor-not-allowed flex items-center gap-1 font-bold text-xs transition-colors cursor-pointer"
+                        title="Decrease 1 unit (-1)"
                       >
-                        –
+                        <Minus className="w-3 h-3" />
+                        <span>1</span>
                       </button>
                       <button
                         type="button"
-                        onClick={() => handleStockAdjustment(p, 5)}
-                        className="px-2 py-1 rounded-lg bg-neutral-100 hover:bg-neutral-200 text-neutral-900 font-bold text-xs"
+                        onClick={() => handleStockAdjustment(p, 1)}
+                        className="px-2.5 h-7 rounded-lg bg-neutral-900 text-white hover:bg-neutral-800 flex items-center gap-1 font-bold text-xs transition-colors cursor-pointer shadow-2xs"
+                        title="Increase 1 unit (+1)"
                       >
-                        +5
-                      </button>
-                      <button
-                        type="button"
-                        onClick={() => handleStockAdjustment(p, 10)}
-                        className="px-2.5 py-1 rounded-lg bg-neutral-900 text-white hover:bg-neutral-800 font-bold text-xs shadow-2xs"
-                      >
-                        +10
+                        <Plus className="w-3 h-3" />
+                        <span>1</span>
                       </button>
                     </div>
                   </div>
