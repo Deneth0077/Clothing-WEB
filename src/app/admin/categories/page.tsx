@@ -237,7 +237,7 @@ export default function AdminCategoriesPage() {
               className="bg-white border border-neutral-200 hover:bg-neutral-50 text-neutral-800 px-4 py-2.5 rounded-full text-xs font-bold transition-colors flex items-center gap-1.5 shadow-2xs cursor-pointer"
             >
               <Package className="w-4 h-4 text-neutral-600" />
-              <span>All Products ({products.length})</span>
+              <span>All Products</span>
             </Link>
 
             <button
@@ -320,29 +320,18 @@ export default function AdminCategoriesPage() {
         {/* 3. Categories Management Section (Card View Only) */}
         <div className="w-full bg-white border border-neutral-200/80 rounded-[24px] sm:rounded-[28px] p-5 sm:p-6 shadow-2xs space-y-5">
           {/* Categories Section Header */}
-          <div className="flex items-center justify-between gap-3">
-            <div className="flex items-center gap-2.5">
-              <div className="w-8 h-8 rounded-xl bg-neutral-100 border border-neutral-200/60 flex items-center justify-center text-neutral-900 shrink-0">
-                <Folder className="w-4 h-4 text-neutral-800" />
-              </div>
-              <div>
-                <h2 className="text-base font-black text-neutral-900">
-                  Categories ({categories.length})
-                </h2>
-                <p className="text-xs text-neutral-500 mt-0.5 font-normal">
-                  Manage product categories, inspect products inside each category, and update banners.
-                </p>
-              </div>
+          <div className="flex items-center gap-2.5">
+            <div className="w-8 h-8 rounded-xl bg-neutral-100 border border-neutral-200/60 flex items-center justify-center text-neutral-900 shrink-0">
+              <Folder className="w-4 h-4 text-neutral-800" />
             </div>
-
-            <button
-              type="button"
-              onClick={() => setIsCreateModalOpen(true)}
-              className="bg-neutral-900 text-white hover:bg-neutral-800 px-4 py-2 rounded-full text-xs font-bold transition-colors flex items-center gap-1.5 shadow-xs shrink-0 cursor-pointer"
-            >
-              <Plus className="w-3.5 h-3.5" />
-              <span>Add Category</span>
-            </button>
+            <div>
+              <h2 className="text-base font-black text-neutral-900">
+                Categories
+              </h2>
+              <p className="text-xs text-neutral-500 mt-0.5 font-normal">
+                Manage product categories, inspect products inside each category, and update banners.
+              </p>
+            </div>
           </div>
 
           {/* Categories Grid (Card View Only) */}
