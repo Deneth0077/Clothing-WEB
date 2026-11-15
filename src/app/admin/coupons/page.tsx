@@ -15,36 +15,18 @@ import {
   ShoppingCart,
   X,
   Check,
+  Copy,
 } from "lucide-react";
 import { ICoupon } from "@/types";
 import { toast } from "sonner";
 
-// Decorative SVG wave for Stat Cards
-function StatWave({ color = "#3b82f6" }: { color?: string }) {
-  return (
-    <svg
-      className="w-20 sm:w-24 h-10 opacity-70 shrink-0 self-end -mb-1 -mr-1"
-      viewBox="0 0 100 40"
-      fill="none"
-    >
-      <path
-        d="M0 35 Q 25 15, 50 26 T 100 12 L 100 40 L 0 40 Z"
-        fill={color}
-        fillOpacity="0.18"
-      />
-      <path
-        d="M0 35 Q 25 15, 50 26 T 100 12"
-        stroke={color}
-        strokeWidth="2.5"
-        strokeLinecap="round"
-      />
-    </svg>
-  );
-}
-
 export default function AdminCouponsPage() {
   const [coupons, setCoupons] = useState<ICoupon[]>([]);
   const [loading, setLoading] = useState(true);
+
+  // Modal & UI States
+  const [isCreateModalOpen, setIsCreateModalOpen] = useState(false);
+  const [copiedCode, setCopiedCode] = useState<string | null>(null);
 
   // Create Form State
   const [code, setCode] = useState("");
@@ -118,6 +100,7 @@ export default function AdminCouponsPage() {
         setDiscountValue(15);
         setMinOrderValue(5000);
         setMaxDiscount(1500);
+        setIsCreateModalOpen(false);
         loadCoupons();
       } else {
         const err = await res.json();
@@ -237,12 +220,32 @@ export default function AdminCouponsPage() {
               </p>
             </div>
           </div>
+
+          <div className="flex items-center gap-2.5 self-start sm:self-auto">
+            <button
+              type="button"
+              onClick={handleExportCSV}
+              className="bg-white hover:bg-neutral-50 border border-neutral-200 text-neutral-800 px-4 py-2.5 rounded-full text-xs font-bold transition-colors flex items-center gap-1.5 shadow-2xs cursor-pointer"
+            >
+              <Download className="w-3.5 h-3.5" />
+              <span>Export</span>
+            </button>
+
+            <button
+              type="button"
+              onClick={() => setIsCreateModalOpen(true)}
+              className="bg-neutral-900 text-white hover:bg-neutral-800 px-5 py-2.5 rounded-full text-xs font-bold transition-colors flex items-center gap-1.5 shadow-xs cursor-pointer"
+            >
+              <Plus className="w-3.5 h-3.5" />
+              <span>Create Discount Code</span>
+            </button>
+          </div>
         </div>
 
-        {/* 2. Four KPI Bento Stat Cards with REAL Data */}
+        {/* 2. Four KPI Bento Stat Cards with REAL Data (No color curves) */}
         <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-3.5">
           {/* Card 1: Total Coupons */}
-          <div className="bg-gradient-to-r from-sky-50/40 via-white to-white border border-neutral-200/90 rounded-2xl p-4 flex items-center justify-between gap-2 shadow-2xs hover:shadow-xs transition-shadow overflow-hidden">
+          <div className="bg-white border border-neutral-200/90 rounded-2xl p-4 flex items-center justify-between gap-2 shadow-2xs hover:shadow-xs transition-shadow">
             <div className="flex items-center gap-3">
               <div className="w-10 h-10 rounded-xl bg-sky-50 border border-sky-100 flex items-center justify-center text-sky-600 shrink-0">
                 <Ticket className="w-5 h-5" />
@@ -258,11 +261,10 @@ export default function AdminCouponsPage() {
                 </div>
               </div>
             </div>
-            <StatWave color="#3b82f6" />
           </div>
 
           {/* Card 2: Active Coupons */}
-          <div className="bg-gradient-to-r from-emerald-50/40 via-white to-white border border-neutral-200/90 rounded-2xl p-4 flex items-center justify-between gap-2 shadow-2xs hover:shadow-xs transition-shadow overflow-hidden">
+          <div className="bg-white border border-neutral-200/90 rounded-2xl p-4 flex items-center justify-between gap-2 shadow-2xs hover:shadow-xs transition-shadow">
             <div className="flex items-center gap-3">
               <div className="w-10 h-10 rounded-xl bg-emerald-50 border border-emerald-100 flex items-center justify-center text-emerald-600 shrink-0">
                 <CheckCircle2 className="w-5 h-5" />
@@ -278,11 +280,10 @@ export default function AdminCouponsPage() {
                 </div>
               </div>
             </div>
-            <StatWave color="#10b981" />
           </div>
 
           {/* Card 3: Inactive Coupons */}
-          <div className="bg-gradient-to-r from-amber-50/40 via-white to-white border border-neutral-200/90 rounded-2xl p-4 flex items-center justify-between gap-2 shadow-2xs hover:shadow-xs transition-shadow overflow-hidden">
+          <div className="bg-white border border-neutral-200/90 rounded-2xl p-4 flex items-center justify-between gap-2 shadow-2xs hover:shadow-xs transition-shadow">
             <div className="flex items-center gap-3">
               <div className="w-10 h-10 rounded-xl bg-amber-50 border border-amber-100 flex items-center justify-center text-amber-600 shrink-0">
                 <PauseCircle className="w-5 h-5" />
@@ -298,11 +299,10 @@ export default function AdminCouponsPage() {
                 </div>
               </div>
             </div>
-            <StatWave color="#f59e0b" />
           </div>
 
           {/* Card 4: Total Usage */}
-          <div className="bg-gradient-to-r from-purple-50/40 via-white to-white border border-neutral-200/90 rounded-2xl p-4 flex items-center justify-between gap-2 shadow-2xs hover:shadow-xs transition-shadow overflow-hidden">
+          <div className="bg-white border border-neutral-200/90 rounded-2xl p-4 flex items-center justify-between gap-2 shadow-2xs hover:shadow-xs transition-shadow">
             <div className="flex items-center gap-3">
               <div className="w-10 h-10 rounded-xl bg-purple-50 border border-purple-100 flex items-center justify-center text-purple-600 shrink-0">
                 <Layers className="w-5 h-5" />
@@ -318,29 +318,233 @@ export default function AdminCouponsPage() {
                 </div>
               </div>
             </div>
-            <StatWave color="#a855f7" />
           </div>
         </div>
 
-        {/* 3. Main Two-Column Layout */}
-        <div className="grid grid-cols-1 lg:grid-cols-12 gap-6 items-start">
-          {/* LEFT COLUMN: Create Discount Code Form (5 cols) */}
-          <div className="lg:col-span-5 bg-white border border-neutral-200/80 rounded-[24px] sm:rounded-[28px] p-5 sm:p-6 shadow-2xs space-y-4">
+        {/* 3. Promotional Coupons Section (Card View with Authentic Coupon Design) */}
+        <div className="w-full bg-neutral-50/50 border border-neutral-200/80 rounded-[24px] sm:rounded-[28px] p-5 sm:p-6 shadow-2xs space-y-5">
+          <div className="flex items-center justify-between gap-3">
             <div className="flex items-center gap-2.5">
-              <div className="w-7 h-7 rounded-full bg-neutral-100 border border-neutral-200/60 flex items-center justify-center text-neutral-800 shrink-0">
-                <Plus className="w-4 h-4" />
+              <div className="w-8 h-8 rounded-xl bg-white border border-neutral-200/80 flex items-center justify-center text-neutral-900 shrink-0 shadow-2xs">
+                <Ticket className="w-4 h-4 text-neutral-800" />
               </div>
               <div>
-                <h2 className="text-sm font-bold text-neutral-900">
-                  Create Discount Code
+                <h2 className="text-base font-black text-neutral-900">
+                  Active Discount Codes
                 </h2>
-                <p className="text-xs text-neutral-500">
-                  Add a new promotional coupon for your customers.
+                <p className="text-xs text-neutral-500 font-normal">
+                  Manage, update, or disable your promotional coupons.
                 </p>
               </div>
             </div>
 
-            <form onSubmit={handleCreateCoupon} className="space-y-3.5 text-xs">
+            <button
+              type="button"
+              onClick={() => setIsCreateModalOpen(true)}
+              className="bg-neutral-900 text-white hover:bg-neutral-800 px-4 py-2 rounded-full text-xs font-bold transition-colors flex items-center gap-1.5 shadow-xs cursor-pointer sm:hidden"
+            >
+              <Plus className="w-3.5 h-3.5" />
+              <span>Create Coupon</span>
+            </button>
+          </div>
+
+          {/* Cards Grid */}
+          {loading ? (
+            <div className="text-xs text-neutral-400 py-16 text-center">
+              Loading coupons...
+            </div>
+          ) : coupons.length === 0 ? (
+            <div className="bg-white border border-neutral-200/80 rounded-2xl p-12 text-center space-y-3">
+              <div className="w-12 h-12 rounded-2xl bg-neutral-100 flex items-center justify-center mx-auto text-neutral-400">
+                <Ticket className="w-6 h-6" />
+              </div>
+              <h3 className="text-sm font-bold text-neutral-800">No discount codes created yet</h3>
+              <p className="text-xs text-neutral-500 max-w-sm mx-auto">
+                Create promotional discount coupons to run sales campaigns and reward loyal customers.
+              </p>
+              <button
+                type="button"
+                onClick={() => setIsCreateModalOpen(true)}
+                className="bg-neutral-900 text-white hover:bg-neutral-800 px-4 py-2 rounded-full text-xs font-bold transition-colors inline-flex items-center gap-1.5 shadow-xs cursor-pointer mt-2"
+              >
+                <Plus className="w-3.5 h-3.5" />
+                <span>Create First Coupon</span>
+              </button>
+            </div>
+          ) : (
+            <div className="grid grid-cols-1 md:grid-cols-2 xl:grid-cols-3 gap-4">
+              {coupons.map((c) => {
+                const isActive = c.isActive !== false;
+                const isCopied = copiedCode === c.code;
+
+                return (
+                  <div
+                    key={c._id || c.code}
+                    className="relative bg-white border border-neutral-200/90 rounded-2xl overflow-hidden shadow-2xs hover:shadow-md transition-all group flex flex-col justify-between"
+                  >
+                    {/* Left Accent indicator stripe */}
+                    <div
+                      className={`absolute left-0 top-0 bottom-0 w-1.5 ${
+                        isActive ? "bg-emerald-500" : "bg-neutral-300"
+                      }`}
+                    />
+
+                    {/* Top Ticket Header: Discount Value & Status */}
+                    <div className="p-4 pl-5 pb-3">
+                      <div className="flex items-start justify-between gap-2">
+                        <div className="flex items-center gap-2.5">
+                          <div
+                            className={`w-9 h-9 rounded-xl flex items-center justify-center shrink-0 ${
+                              isActive
+                                ? "bg-emerald-50 text-emerald-600 border border-emerald-100"
+                                : "bg-neutral-100 text-neutral-400"
+                            }`}
+                          >
+                            <Percent className="w-4 h-4" />
+                          </div>
+                          <div>
+                            <span className="text-lg font-black text-neutral-900 tracking-tight leading-none block">
+                              {c.discountType === "percentage"
+                                ? `${c.discountValue}% OFF`
+                                : `Rs. ${c.discountValue?.toLocaleString()} OFF`}
+                            </span>
+                            <span className="text-[10px] text-neutral-500 font-medium uppercase tracking-wider mt-0.5 block">
+                              {c.discountType === "percentage" ? "Percentage Discount" : "Fixed Discount"}
+                            </span>
+                          </div>
+                        </div>
+
+                        <span
+                          className={`text-[10px] font-bold px-2 py-0.5 rounded-full border ${
+                            isActive
+                              ? "text-emerald-700 bg-emerald-50 border-emerald-100"
+                              : "text-neutral-500 bg-neutral-100 border-neutral-200"
+                          }`}
+                        >
+                          {isActive ? "Active" : "Inactive"}
+                        </span>
+                      </div>
+                    </div>
+
+                    {/* Perforated Divider with Cutout Notches */}
+                    <div className="relative flex items-center my-0.5">
+                      <div className="absolute -left-2.5 top-1/2 -translate-y-1/2 w-5 h-5 rounded-full bg-neutral-50/90 border border-neutral-200/80" />
+                      <div className="w-full border-t-2 border-dashed border-neutral-200 mx-4" />
+                      <div className="absolute -right-2.5 top-1/2 -translate-y-1/2 w-5 h-5 rounded-full bg-neutral-50/90 border border-neutral-200/80" />
+                    </div>
+
+                    {/* Bottom Ticket Body: Code Badge + Spend Limits + Actions */}
+                    <div className="p-4 pl-5 pt-3 space-y-3">
+                      {/* Coupon Code Pill with Copy */}
+                      <div className="flex items-center justify-between gap-2 bg-neutral-50 border border-dashed border-neutral-300 rounded-xl px-3 py-2">
+                        <div className="flex items-center gap-2 min-w-0">
+                          <Ticket className="w-3.5 h-3.5 text-neutral-400 shrink-0" />
+                          <span className="font-mono text-xs font-black tracking-widest text-neutral-900 truncate">
+                            {c.code}
+                          </span>
+                        </div>
+                        <button
+                          type="button"
+                          onClick={() => {
+                            navigator.clipboard.writeText(c.code);
+                            setCopiedCode(c.code);
+                            toast.success(`Copied "${c.code}" to clipboard!`);
+                            setTimeout(() => setCopiedCode(null), 2000);
+                          }}
+                          className="text-[11px] font-bold text-neutral-600 hover:text-black flex items-center gap-1 transition-colors cursor-pointer shrink-0"
+                          title="Copy Code"
+                        >
+                          {isCopied ? (
+                            <>
+                              <Check className="w-3 h-3 text-emerald-600" />
+                              <span className="text-emerald-600 text-[10px]">Copied</span>
+                            </>
+                          ) : (
+                            <>
+                              <Copy className="w-3 h-3" />
+                              <span className="text-[10px]">Copy</span>
+                            </>
+                          )}
+                        </button>
+                      </div>
+
+                      {/* Conditions & Usage */}
+                      <div className="space-y-1 text-[11px] text-neutral-500 font-medium">
+                        <div className="flex items-center justify-between">
+                          <span className="flex items-center gap-1">
+                            <ShoppingCart className="w-3 h-3 text-neutral-400 shrink-0" />
+                            <span>Min spend:</span>
+                          </span>
+                          <span className="font-bold text-neutral-800">
+                            Rs. {c.minOrderValue ? c.minOrderValue.toLocaleString() : "0"}
+                          </span>
+                        </div>
+                        <div className="flex items-center justify-between">
+                          <span className="flex items-center gap-1">
+                            <Layers className="w-3 h-3 text-neutral-400 shrink-0" />
+                            <span>Max cap:</span>
+                          </span>
+                          <span className="font-bold text-neutral-800">
+                            {c.maxDiscount ? `Rs. ${c.maxDiscount.toLocaleString()}` : "No limit"}
+                          </span>
+                        </div>
+                      </div>
+
+                      {/* Footer Actions: Edit and Delete */}
+                      <div className="pt-2 border-t border-neutral-100 flex items-center justify-between">
+                        <span className="text-[10px] text-neutral-400 font-mono">
+                          Used {c.usedCount || 0} times
+                        </span>
+
+                        <div className="flex items-center gap-1.5">
+                          <button
+                            type="button"
+                            onClick={() => openEditModal(c)}
+                            className="px-2.5 py-1 rounded-lg border border-neutral-200 bg-white hover:bg-neutral-50 text-neutral-700 hover:text-neutral-900 text-xs font-bold flex items-center gap-1 shadow-2xs transition-colors cursor-pointer"
+                            title="Edit Coupon"
+                          >
+                            <Pencil className="w-3 h-3 text-neutral-500" />
+                            <span>Edit</span>
+                          </button>
+
+                          <button
+                            type="button"
+                            onClick={() => handleDeleteCoupon(c)}
+                            className="p-1 rounded-lg border border-neutral-200 bg-white hover:bg-rose-50 text-neutral-500 hover:text-rose-600 shadow-2xs transition-colors cursor-pointer"
+                            title="Delete Coupon"
+                          >
+                            <Trash2 className="w-3.5 h-3.5" />
+                          </button>
+                        </div>
+                      </div>
+                    </div>
+                  </div>
+                );
+              })}
+            </div>
+          )}
+        </div>
+      </div>
+
+      {/* CREATE DISCOUNT CODE MODAL */}
+      {isCreateModalOpen && (
+        <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/40 backdrop-blur-xs p-4 animate-in fade-in duration-150">
+          <div className="bg-white border border-neutral-200 rounded-3xl max-w-md w-full p-6 shadow-2xl text-neutral-900 animate-in zoom-in-95 duration-200">
+            <div className="flex items-center justify-between pb-3 border-b border-neutral-100">
+              <h3 className="text-sm font-black uppercase tracking-wider text-neutral-900 flex items-center gap-2">
+                <Ticket className="w-4 h-4 text-black" />
+                <span>Create Discount Code</span>
+              </h3>
+              <button
+                type="button"
+                onClick={() => setIsCreateModalOpen(false)}
+                className="text-neutral-400 hover:text-black cursor-pointer"
+              >
+                <X className="w-4 h-4" />
+              </button>
+            </div>
+
+            <form onSubmit={handleCreateCoupon} className="mt-4 space-y-3.5 text-xs">
               {/* Coupon Code */}
               <div>
                 <label className="font-bold text-neutral-700 block mb-1">
@@ -354,7 +558,7 @@ export default function AdminCouponsPage() {
                     placeholder="E.g. SUMMER25"
                     value={code}
                     onChange={(e) => setCode(e.target.value.toUpperCase())}
-                    className="w-full bg-white border border-neutral-200/90 rounded-xl pl-10 pr-3.5 py-2.5 text-xs text-neutral-900 font-mono uppercase font-bold focus:outline-hidden focus:border-neutral-900 shadow-2xs"
+                    className="w-full bg-neutral-50 border border-neutral-200 rounded-xl pl-10 pr-3.5 py-2.5 text-xs text-neutral-900 font-mono uppercase font-bold focus:outline-hidden focus:border-black"
                   />
                 </div>
               </div>
@@ -370,7 +574,7 @@ export default function AdminCouponsPage() {
                     <select
                       value={discountType}
                       onChange={(e) => setDiscountType(e.target.value as any)}
-                      className="w-full bg-white border border-neutral-200/90 rounded-xl pl-8 pr-3 py-2.5 text-xs text-neutral-900 font-medium focus:outline-hidden focus:border-neutral-900 shadow-2xs cursor-pointer appearance-none"
+                      className="w-full bg-neutral-50 border border-neutral-200 rounded-xl pl-8 pr-3 py-2.5 text-xs text-neutral-900 font-medium focus:outline-hidden focus:border-black cursor-pointer"
                     >
                       <option value="percentage">Percentage (%)</option>
                       <option value="fixed">Fixed (LKR)</option>
@@ -390,7 +594,7 @@ export default function AdminCouponsPage() {
                       min={1}
                       value={discountValue}
                       onChange={(e) => setDiscountValue(Number(e.target.value))}
-                      className="w-full bg-white border border-neutral-200/90 rounded-xl pl-8 pr-3 py-2.5 text-xs text-neutral-900 font-bold focus:outline-hidden focus:border-neutral-900 shadow-2xs"
+                      className="w-full bg-neutral-50 border border-neutral-200 rounded-xl pl-8 pr-3 py-2.5 text-xs text-neutral-900 font-bold focus:outline-hidden focus:border-black"
                     />
                   </div>
                 </div>
@@ -409,7 +613,7 @@ export default function AdminCouponsPage() {
                       min={0}
                       value={minOrderValue}
                       onChange={(e) => setMinOrderValue(Number(e.target.value))}
-                      className="w-full bg-white border border-neutral-200/90 rounded-xl pl-8 pr-3 py-2.5 text-xs text-neutral-900 focus:outline-hidden focus:border-neutral-900 shadow-2xs"
+                      className="w-full bg-neutral-50 border border-neutral-200 rounded-xl pl-8 pr-3 py-2.5 text-xs text-neutral-900 focus:outline-hidden focus:border-black"
                     />
                   </div>
                 </div>
@@ -425,125 +629,32 @@ export default function AdminCouponsPage() {
                       min={0}
                       value={maxDiscount}
                       onChange={(e) => setMaxDiscount(Number(e.target.value))}
-                      className="w-full bg-white border border-neutral-200/90 rounded-xl pl-8 pr-3 py-2.5 text-xs text-neutral-900 focus:outline-hidden focus:border-neutral-900 shadow-2xs"
+                      className="w-full bg-neutral-50 border border-neutral-200 rounded-xl pl-8 pr-3 py-2.5 text-xs text-neutral-900 focus:outline-hidden focus:border-black"
                     />
                   </div>
                 </div>
               </div>
 
-              {/* Submit Button */}
-              <button
-                type="submit"
-                disabled={isSubmitting}
-                className="w-full bg-neutral-900 text-white hover:bg-neutral-800 py-3 rounded-xl text-xs font-bold transition-colors shadow-xs cursor-pointer flex items-center justify-center gap-1.5 mt-2 disabled:opacity-50"
-              >
-                <Plus className="w-4 h-4" />
-                <span>{isSubmitting ? "Creating..." : "Create Coupon"}</span>
-              </button>
+              <div className="flex gap-2 pt-3 border-t border-neutral-100 mt-4">
+                <button
+                  type="button"
+                  onClick={() => setIsCreateModalOpen(false)}
+                  className="flex-1 py-2.5 rounded-xl border border-neutral-200 text-neutral-700 font-bold uppercase hover:bg-neutral-100 cursor-pointer"
+                >
+                  Cancel
+                </button>
+                <button
+                  type="submit"
+                  disabled={isSubmitting}
+                  className="flex-1 py-2.5 rounded-xl bg-black text-white hover:bg-neutral-800 font-bold uppercase cursor-pointer shadow-xs disabled:opacity-50"
+                >
+                  {isSubmitting ? "Creating..." : "Create Coupon"}
+                </button>
+              </div>
             </form>
           </div>
-
-          {/* RIGHT COLUMN: Active Discount Codes List (7 cols) */}
-          <div className="lg:col-span-7 bg-white border border-neutral-200/80 rounded-[24px] sm:rounded-[28px] p-5 sm:p-6 shadow-2xs space-y-4">
-            <div className="flex items-center justify-between gap-3">
-              <div className="flex items-center gap-2.5">
-                <div className="w-8 h-8 rounded-xl bg-neutral-100 border border-neutral-200/60 flex items-center justify-center text-neutral-800 shrink-0">
-                  <Ticket className="w-4 h-4" />
-                </div>
-                <div>
-                  <h2 className="text-sm font-bold text-neutral-900">
-                    Active Discount Codes ({coupons.length})
-                  </h2>
-                  <p className="text-xs text-neutral-500 font-normal">
-                    Manage, update, or disable your promotional coupons.
-                  </p>
-                </div>
-              </div>
-
-              <button
-                type="button"
-                onClick={handleExportCSV}
-                className="bg-white hover:bg-neutral-50 border border-neutral-200 text-neutral-800 px-3.5 py-1.5 rounded-full text-xs font-bold transition-colors flex items-center gap-1.5 shadow-2xs cursor-pointer shrink-0"
-              >
-                <Download className="w-3.5 h-3.5" />
-                <span>Export</span>
-              </button>
-            </div>
-
-            {/* Coupons List */}
-            <div className="space-y-3">
-              {loading ? (
-                <div className="text-xs text-neutral-400 py-8 text-center">
-                  Loading coupons...
-                </div>
-              ) : coupons.length === 0 ? (
-                <div className="text-xs text-neutral-400 py-8 text-center">
-                  No discount codes created yet.
-                </div>
-              ) : (
-                coupons.map((c) => {
-                  const isActive = c.isActive !== false;
-                  return (
-                    <div
-                      key={c.code}
-                      className="border border-neutral-200/90 rounded-2xl p-4 flex items-center justify-between gap-3 shadow-2xs hover:border-neutral-300 transition-all border-l-4 border-l-emerald-500 bg-white"
-                    >
-                      <div className="min-w-0 flex-1">
-                        <div className="flex items-center gap-2.5">
-                          <strong className="text-neutral-900 font-mono text-sm tracking-wider font-black">
-                            {c.code}
-                          </strong>
-                          <span className="bg-emerald-50 text-emerald-700 font-bold text-[10px] px-2 py-0.5 rounded-full font-mono border border-emerald-100">
-                            {c.discountType === "percentage"
-                              ? `${c.discountValue}% OFF`
-                              : `Rs. ${c.discountValue} OFF`}
-                          </span>
-                        </div>
-                        <div className="flex items-center gap-1 text-[11px] text-neutral-500 mt-1 font-medium">
-                          <ShoppingCart className="w-3.5 h-3.5 text-neutral-400 shrink-0" />
-                          <span>
-                            Min spend: Rs. {c.minOrderValue?.toLocaleString()} • Max cap: Rs. {c.maxDiscount?.toLocaleString()}
-                          </span>
-                        </div>
-                      </div>
-
-                      <div className="flex items-center gap-2 shrink-0">
-                        <span
-                          className={`text-[10px] font-bold px-2.5 py-1 rounded-full border ${
-                            isActive
-                              ? "text-emerald-700 bg-emerald-50 border-emerald-100"
-                              : "text-neutral-500 bg-neutral-100 border-neutral-200"
-                          }`}
-                        >
-                          {isActive ? "Active" : "Inactive"}
-                        </span>
-
-                        <button
-                          type="button"
-                          onClick={() => openEditModal(c)}
-                          className="w-8 h-8 rounded-full border border-neutral-200 bg-white hover:bg-neutral-50 flex items-center justify-center text-neutral-600 hover:text-neutral-900 shadow-2xs transition-colors cursor-pointer"
-                          title="Edit Coupon"
-                        >
-                          <Pencil className="w-3.5 h-3.5" />
-                        </button>
-
-                        <button
-                          type="button"
-                          onClick={() => handleDeleteCoupon(c)}
-                          className="w-8 h-8 rounded-full border border-neutral-200 bg-white hover:bg-rose-50 flex items-center justify-center text-neutral-600 hover:text-rose-600 shadow-2xs transition-colors cursor-pointer"
-                          title="Delete Coupon"
-                        >
-                          <Trash2 className="w-3.5 h-3.5" />
-                        </button>
-                      </div>
-                    </div>
-                  );
-                })
-              )}
-            </div>
-          </div>
         </div>
-      </div>
+      )}
 
       {/* EDIT COUPON MODAL */}
       {editingCoupon && (
