@@ -27,6 +27,7 @@ import {
   IReview,
   ISiteSettings,
   OrderStatus,
+  PaymentStatus,
 } from "@/types";
 
 function toPlain<T>(data: T): T {
@@ -43,10 +44,10 @@ let memoryCategories: ICategory[] = JSON.parse(JSON.stringify(SEED_CATEGORIES)).
 let memoryBrands: IBrand[] = JSON.parse(JSON.stringify(SEED_BRANDS)).map(
   (b: IBrand, idx: number) => ({ ...b, _id: `brand_${idx + 1}` })
 );
-let memoryBanners: IBanner[] = JSON.parse(JSON.stringify(SEED_BANNERS)).map(
+const memoryBanners: IBanner[] = JSON.parse(JSON.stringify(SEED_BANNERS)).map(
   (b: IBanner, idx: number) => ({ ...b, _id: `banner_${idx + 1}` })
 );
-let memoryReviews: IReview[] = JSON.parse(JSON.stringify(SEED_REVIEWS)).map(
+const memoryReviews: IReview[] = JSON.parse(JSON.stringify(SEED_REVIEWS)).map(
   (r: IReview, idx: number) => ({ ...r, _id: `rev_${idx + 1}` })
 );
 let memorySettings: ISiteSettings = JSON.parse(JSON.stringify(SEED_SETTINGS));
@@ -86,7 +87,7 @@ let memoryOrders: IOrder[] = [
     paymentStatus: "pending",
     orderStatus: "processing",
     trackingNumber: "PRONET-902148",
-    createdAt: new Date().toISOString(),
+    createdAt: new Date(Date.now() - 3600000 * 2).toISOString(), // Today (~2 hrs ago)
   },
   {
     _id: "ord_1002",
@@ -131,7 +132,266 @@ let memoryOrders: IOrder[] = [
     paymentStatus: "paid",
     orderStatus: "confirmed",
     trackingNumber: "PRONET-902159",
-    createdAt: new Date(Date.now() - 3600000 * 5).toISOString(),
+    createdAt: new Date(Date.now() - 3600000 * 5).toISOString(), // Today (~5 hrs ago)
+  },
+  {
+    _id: "ord_1003",
+    orderNumber: "TBH-90216",
+    customer: {
+      name: "Dilshan Fernando",
+      email: "dilshan.f@example.com",
+      phone: "+94765432109",
+    },
+    shippingAddress: {
+      street: "88 Peradeniya Road",
+      city: "Kandy",
+      district: "Kandy",
+      postalCode: "20000",
+    },
+    items: [
+      {
+        productId: "waves-black-mens-sandal",
+        name: "Waves Black Men's Sandal",
+        sku: "WAVES-203",
+        price: 4750,
+        quantity: 1,
+        image: "https://images.unsplash.com/photo-1603808033192-082d6919d3e1?auto=format&fit=crop&w=800&q=80",
+        selectedSize: "42",
+      },
+    ],
+    subtotal: 4750,
+    discount: 0,
+    shippingFee: 450,
+    total: 5200,
+    paymentMethod: "koko",
+    paymentStatus: "paid",
+    orderStatus: "shipped",
+    trackingNumber: "PRONET-902165",
+    createdAt: new Date(Date.now() - 86400000 * 1.2).toISOString(), // Yesterday (1.2 days ago)
+  },
+  {
+    _id: "ord_1004",
+    orderNumber: "TBH-90217",
+    customer: {
+      name: "Tharushi Alwis",
+      email: "tharushi.a@example.com",
+      phone: "+94723456789",
+    },
+    shippingAddress: {
+      street: "24 Beach Road",
+      city: "Mount Lavinia",
+      district: "Colombo",
+      postalCode: "10370",
+    },
+    items: [
+      {
+        productId: "breakwater-linen-shirt",
+        name: "Breakwater Coastal Linen Shirt",
+        sku: "BW-LSH-01",
+        price: 5200,
+        quantity: 1,
+        image: "https://images.unsplash.com/photo-1596755094514-f87e34085b2c?auto=format&fit=crop&w=800&q=80",
+        selectedColor: "Sky Blue",
+        selectedSize: "M",
+      },
+      {
+        productId: "waves-womens-side-bags",
+        name: "Waves Women's Side Bags",
+        sku: "WAVES-WB-002",
+        price: 3300,
+        quantity: 1,
+        image: "https://images.unsplash.com/photo-1584917865442-de89df76afd3?auto=format&fit=crop&w=800&q=80",
+        selectedColor: "Coral Red",
+      },
+    ],
+    subtotal: 8500,
+    discount: 0,
+    shippingFee: 450,
+    total: 8950,
+    paymentMethod: "card",
+    paymentStatus: "paid",
+    orderStatus: "processing",
+    trackingNumber: "PRONET-902172",
+    createdAt: new Date(Date.now() - 86400000 * 3).toISOString(), // 3 days ago (Last 7 Days)
+  },
+  {
+    _id: "ord_1005",
+    orderNumber: "TBH-90218",
+    customer: {
+      name: "Malith Bandara",
+      email: "malith.b@example.com",
+      phone: "+94781122334",
+    },
+    shippingAddress: {
+      street: "17 Kurunegala Road",
+      city: "Kurunegala",
+      district: "Kurunegala",
+      postalCode: "60000",
+    },
+    items: [
+      {
+        productId: "waves-two-colour-mens-sandal",
+        name: "Waves Two-Colour Men's Sandal",
+        sku: "WAVES-201",
+        price: 3700,
+        quantity: 1,
+        image: "https://images.unsplash.com/photo-1560769629-975ec94e6a86?auto=format&fit=crop&w=800&q=80",
+        selectedSize: "41",
+      },
+    ],
+    subtotal: 3700,
+    discount: 0,
+    shippingFee: 450,
+    total: 4150,
+    paymentMethod: "cod",
+    paymentStatus: "pending",
+    orderStatus: "confirmed",
+    trackingNumber: "PRONET-902183",
+    createdAt: new Date(Date.now() - 86400000 * 5).toISOString(), // 5 days ago (Last 7 Days)
+  },
+  {
+    _id: "ord_1006",
+    orderNumber: "TBH-90219",
+    customer: {
+      name: "Anuki Senanayake",
+      email: "anuki.s@example.com",
+      phone: "+94778899001",
+    },
+    shippingAddress: {
+      street: "5 Flower Road",
+      city: "Colombo 07",
+      district: "Colombo",
+      postalCode: "00700",
+    },
+    items: [
+      {
+        productId: "ansel-nb1014",
+        name: "Ansel – NB1014",
+        sku: "NB1014",
+        price: 3199,
+        quantity: 2,
+        image: "https://images.unsplash.com/photo-1543163521-1bf539c55dd2?auto=format&fit=crop&w=800&q=80",
+      },
+      {
+        productId: "breakwater-beach-tote",
+        name: "Breakwater Striped Beach Tote",
+        sku: "BW-TOT-03",
+        price: 5552,
+        quantity: 1,
+        image: "https://images.unsplash.com/photo-1544816155-12df9643f363?auto=format&fit=crop&w=800&q=80",
+      },
+    ],
+    subtotal: 11950,
+    discount: 0,
+    shippingFee: 450,
+    total: 12400,
+    paymentMethod: "card",
+    paymentStatus: "paid",
+    orderStatus: "delivered",
+    trackingNumber: "PRONET-902194",
+    createdAt: new Date(Date.now() - 86400000 * 10).toISOString(), // 10 days ago (This Month, but not Last 7 Days)
+  },
+  {
+    _id: "ord_1007",
+    orderNumber: "TBH-90220",
+    customer: {
+      name: "Chathura Silva",
+      email: "chathura.s@example.com",
+      phone: "+94752233445",
+    },
+    shippingAddress: {
+      street: "63 Main Street",
+      city: "Galle",
+      district: "Galle",
+      postalCode: "80000",
+    },
+    items: [
+      {
+        productId: "waves-black-mens-sandal",
+        name: "Waves Black Men's Sandal",
+        sku: "WAVES-203",
+        price: 7350,
+        quantity: 1,
+        image: "https://images.unsplash.com/photo-1603808033192-082d6919d3e1?auto=format&fit=crop&w=800&q=80",
+      },
+    ],
+    subtotal: 7350,
+    discount: 0,
+    shippingFee: 450,
+    total: 7800,
+    paymentMethod: "mintpay",
+    paymentStatus: "paid",
+    orderStatus: "delivered",
+    trackingNumber: "PRONET-902201",
+    createdAt: new Date(Date.now() - 86400000 * 14).toISOString(), // 14 days ago (This Month)
+  },
+  {
+    _id: "ord_1008",
+    orderNumber: "TBH-90221",
+    customer: {
+      name: "Kavindi Jayasuriya",
+      email: "kavindi.j@example.com",
+      phone: "+94713344556",
+    },
+    shippingAddress: {
+      street: "90 Circular Road",
+      city: "Battaramulla",
+      district: "Colombo",
+      postalCode: "10120",
+    },
+    items: [
+      {
+        productId: "waves-poncho-ash-flower",
+        name: "Waves Poncho Ash – Flower",
+        sku: "H070002051",
+        price: 14750,
+        quantity: 5,
+        image: "https://images.unsplash.com/photo-1515886657613-9f3515b0c78f?auto=format&fit=crop&w=900&q=80",
+      },
+    ],
+    subtotal: 14750,
+    discount: 0,
+    shippingFee: 450,
+    total: 15200,
+    paymentMethod: "card",
+    paymentStatus: "paid",
+    orderStatus: "delivered",
+    trackingNumber: "PRONET-902218",
+    createdAt: new Date(Date.now() - 86400000 * 35).toISOString(), // 35 days ago (Last Month)
+  },
+  {
+    _id: "ord_1009",
+    orderNumber: "TBH-90222",
+    customer: {
+      name: "Ruchira Perera",
+      email: "ruchira.p@example.com",
+      phone: "+94770011223",
+    },
+    shippingAddress: {
+      street: "14 Ward Place",
+      city: "Colombo 07",
+      district: "Colombo",
+      postalCode: "00700",
+    },
+    items: [
+      {
+        productId: "ansel-nb1014",
+        name: "Ansel – NB1014",
+        sku: "NB1014",
+        price: 3450,
+        quantity: 1,
+        image: "https://images.unsplash.com/photo-1543163521-1bf539c55dd2?auto=format&fit=crop&w=800&q=80",
+      },
+    ],
+    subtotal: 3450,
+    discount: 0,
+    shippingFee: 450,
+    total: 3900,
+    paymentMethod: "cod",
+    paymentStatus: "failed",
+    orderStatus: "cancelled",
+    trackingNumber: "PRONET-902229",
+    createdAt: new Date(Date.now() - 86400000 * 45).toISOString(), // 45 days ago (Older)
   },
 ];
 
@@ -177,7 +437,7 @@ interface CustomOrderRecord {
   createdAt: string;
 }
 
-let memoryCustomOrders: CustomOrderRecord[] = [
+const memoryCustomOrders: CustomOrderRecord[] = [
   {
     _id: "co_1",
     orderNumber: "CUST-WAVES-01",
@@ -192,7 +452,135 @@ let memoryCustomOrders: CustomOrderRecord[] = [
     customerPhone: "+94778899001",
     price: 4350,
     status: "approved",
-    createdAt: new Date().toISOString(),
+    createdAt: new Date(Date.now() - 3600000 * 2).toISOString(), // 2 hours ago (Today)
+  },
+  {
+    _id: "co_2",
+    orderNumber: "CUST-WAVES-02",
+    baseProductId: "waves-classic-flip-flop",
+    baseProductName: "Waves Classic Flip-Flop",
+    color: "Black / Grey",
+    size: "41",
+    customText: "ARUGAM BAY '26",
+    textColor: "#ffffff",
+    customerName: "Dilshan Fernando",
+    customerEmail: "dilshan.f@gmail.com",
+    customerPhone: "+94765432109",
+    price: 3850,
+    status: "in_production",
+    createdAt: new Date(Date.now() - 3600000 * 6).toISOString(), // 6 hours ago (Today)
+  },
+  {
+    _id: "co_3",
+    orderNumber: "CUST-WAVES-03",
+    baseProductId: "waves-isle-unisex-slipper",
+    baseProductName: "Waves Isle Unisex Slipper",
+    color: "Olive / Tan",
+    size: "38",
+    customText: "ISLAND VIBES",
+    textColor: "#ffffff",
+    customerName: "Kavindi Jayawardena",
+    customerEmail: "kavindi.j@outlook.com",
+    customerPhone: "+94719876543",
+    price: 4100,
+    status: "pending_review",
+    createdAt: new Date(Date.now() - 86400000 * 1).toISOString(), // 1 day ago (Last 7 Days)
+  },
+  {
+    _id: "co_4",
+    orderNumber: "CUST-WAVES-04",
+    baseProductId: "breakwater-coastal-slides",
+    baseProductName: "Breakwater Coastal Slides",
+    color: "Navy / Blue",
+    size: "43",
+    customText: "SOUTHERN BREEZE",
+    textColor: "#ffffff",
+    customerName: "Malith Bandara",
+    customerEmail: "malith.b@gmail.com",
+    customerPhone: "+94781122334",
+    price: 4650,
+    status: "approved",
+    createdAt: new Date(Date.now() - 86400000 * 3).toISOString(), // 3 days ago (Last 7 Days)
+  },
+  {
+    _id: "co_5",
+    orderNumber: "CUST-WAVES-05",
+    baseProductId: "waves-two-colour-mens-sandal",
+    baseProductName: "Waves Two-Colour Men's Sandal",
+    color: "Burgundy / White",
+    size: "39",
+    customText: "WANDERLUST",
+    textColor: "#ffffff",
+    customerName: "Tharushi Alwis",
+    customerEmail: "tharushi.a@yahoo.com",
+    customerPhone: "+94723456789",
+    price: 4350,
+    status: "rejected",
+    createdAt: new Date(Date.now() - 86400000 * 5).toISOString(), // 5 days ago (Last 7 Days)
+  },
+  {
+    _id: "co_6",
+    orderNumber: "CUST-WAVES-06",
+    baseProductId: "waves-coastline-explorer-sandal",
+    baseProductName: "Waves Coastline Explorer Sandal",
+    color: "Black / Orange",
+    size: "44",
+    customText: "GALLE FORT SUNSET",
+    textColor: "#ffffff",
+    customerName: "Nuwan Pradeep",
+    customerEmail: "nuwan.p@gmail.com",
+    customerPhone: "+94771239876",
+    price: 4950,
+    status: "in_production",
+    createdAt: new Date(Date.now() - 86400000 * 6).toISOString(), // 6 days ago (Last 7 Days)
+  },
+  {
+    _id: "co_7",
+    orderNumber: "CUST-WAVES-07",
+    baseProductId: "waves-classic-flip-flop",
+    baseProductName: "Waves Classic Flip-Flop",
+    color: "Yellow / White",
+    size: "37",
+    customText: "SUN & SALTY AIR",
+    textColor: "#000000",
+    customerName: "Anuki De Silva",
+    customerEmail: "anuki.ds@gmail.com",
+    customerPhone: "+94705544332",
+    price: 3850,
+    status: "pending_review",
+    createdAt: new Date(Date.now() - 86400000 * 12).toISOString(), // 12 days ago (This Month)
+  },
+  {
+    _id: "co_8",
+    orderNumber: "CUST-WAVES-08",
+    baseProductId: "breakwater-coastal-slides",
+    baseProductName: "Breakwater Coastal Slides",
+    color: "Ash / Black",
+    size: "42",
+    customText: "MIRISSA POINT",
+    textColor: "#ffffff",
+    customerName: "Charith Senanayake",
+    customerEmail: "charith.s@gmail.com",
+    customerPhone: "+94774433221",
+    price: 4650,
+    status: "approved",
+    createdAt: new Date(Date.now() - 86400000 * 18).toISOString(), // 18 days ago (This Month)
+  },
+  {
+    _id: "co_9",
+    orderNumber: "CUST-WAVES-09",
+    baseProductId: "waves-isle-unisex-slipper",
+    baseProductName: "Waves Isle Unisex Slipper",
+    color: "Navy / White",
+    size: "40",
+    customText: "TROPICAL LIFE",
+    textColor: "#ffffff",
+    customerName: "Heshani Perera",
+    customerEmail: "heshani.p@gmail.com",
+    customerPhone: "+94759988776",
+    price: 4100,
+    status: "in_production",
+    createdAt: new Date(Date.now() - 86400000 * 35).toISOString(), // 35 days ago (Older)
   },
 ];
 
@@ -316,20 +704,37 @@ export async function getProducts(filters?: {
   return { products: paginated, total };
 }
 
-export async function getProductBySlug(slug: string): Promise<IProduct | null> {
+export async function getProductBySlug(slugOrId: string): Promise<IProduct | null> {
   const db = await connectDB();
   if (db) {
     try {
-      const p = await ProductModel.findOne({ slug: slug.toLowerCase() }).lean();
+      let p = null;
+      if (mongoose.Types.ObjectId.isValid(slugOrId)) {
+        p = await ProductModel.findById(slugOrId).lean();
+      }
+      if (!p) {
+        p = await ProductModel.findOne({
+          $or: [
+            { slug: slugOrId.toLowerCase() },
+            { sku: slugOrId.toUpperCase() },
+            { _id: slugOrId },
+          ],
+        }).lean();
+      }
       if (p) {
         const plain = JSON.parse(JSON.stringify(p));
         return { ...plain, _id: String(plain._id) } as IProduct;
       }
     } catch (e) {
-      console.error("Error fetching product by slug from MongoDB:", e);
+      console.error("Error fetching product by slug/id from MongoDB:", e);
     }
   }
-  const item = memoryProducts.find((p) => p.slug.toLowerCase() === slug.toLowerCase());
+  const item = memoryProducts.find(
+    (p) =>
+      p.slug.toLowerCase() === slugOrId.toLowerCase() ||
+      p._id === slugOrId ||
+      p.sku.toUpperCase() === slugOrId.toUpperCase()
+  );
   return item ? JSON.parse(JSON.stringify(item)) : null;
 }
 
@@ -405,7 +810,13 @@ export async function updateProduct(id: string, data: Partial<IProduct>): Promis
       }
       if (!updated) {
         updated = await ProductModel.findOneAndUpdate(
-          { $or: [{ slug: id }, { sku: id }] },
+          {
+            $or: [
+              { slug: id.toLowerCase() },
+              { sku: id.toUpperCase() },
+              { _id: id },
+            ],
+          },
           data,
           { new: true }
         ).lean();
@@ -415,7 +826,12 @@ export async function updateProduct(id: string, data: Partial<IProduct>): Promis
       console.error("Error updating product in MongoDB:", e);
     }
   }
-  const index = memoryProducts.findIndex((p) => p._id === id || p.slug === id || p.sku === id);
+  const index = memoryProducts.findIndex(
+    (p) =>
+      p._id === id ||
+      p.slug.toLowerCase() === id.toLowerCase() ||
+      p.sku.toUpperCase() === id.toUpperCase()
+  );
   if (index !== -1) {
     memoryProducts[index] = { ...memoryProducts[index], ...data };
     return memoryProducts[index];
@@ -430,7 +846,13 @@ export async function deleteProduct(id: string): Promise<boolean> {
       if (mongoose.Types.ObjectId.isValid(id)) {
         await ProductModel.findByIdAndDelete(id);
       } else {
-        await ProductModel.findOneAndDelete({ $or: [{ slug: id }, { sku: id }] });
+        await ProductModel.findOneAndDelete({
+          $or: [
+            { slug: id.toLowerCase() },
+            { sku: id.toUpperCase() },
+            { _id: id },
+          ],
+        });
       }
       return true;
     } catch (e) {
@@ -438,7 +860,12 @@ export async function deleteProduct(id: string): Promise<boolean> {
     }
   }
   const initialLen = memoryProducts.length;
-  memoryProducts = memoryProducts.filter((p) => p._id !== id && p.slug !== id && p.sku !== id);
+  memoryProducts = memoryProducts.filter(
+    (p) =>
+      p._id !== id &&
+      p.slug.toLowerCase() !== id.toLowerCase() &&
+      p.sku.toUpperCase() !== id.toUpperCase()
+  );
   return memoryProducts.length < initialLen;
 }
 
@@ -638,6 +1065,30 @@ export async function getOrders(): Promise<IOrder[]> {
         .sort({ createdAt: -1 })
         .lean();
       if (raw.length > 0) {
+        // If DB has fewer than 5 orders, seed the rest so all date ranges have realistic orders
+        if (raw.length < 5) {
+          const existingNums = new Set(raw.map((r: any) => r.orderNumber));
+          const missing = memoryOrders.filter((m) => !existingNums.has(m.orderNumber));
+          if (missing.length > 0) {
+            try {
+              await OrderModel.insertMany(missing);
+              const refreshed = await OrderModel.find({
+                orderNumber: { $exists: true, $regex: /^TBH/ },
+              })
+                .sort({ createdAt: -1 })
+                .lean();
+              return toPlain(refreshed).map((o: any) => ({
+                ...o,
+                _id: String(o._id),
+                customer: o.customer || { name: "Customer", email: "", phone: "" },
+                items: o.items || [],
+                total: typeof o.total === "number" ? o.total : 0,
+                orderStatus: o.orderStatus || "processing",
+                paymentMethod: o.paymentMethod || "cod",
+              })) as IOrder[];
+            } catch {}
+          }
+        }
         return toPlain(raw).map((o: any) => ({
           ...o,
           _id: String(o._id),
@@ -647,6 +1098,20 @@ export async function getOrders(): Promise<IOrder[]> {
           orderStatus: o.orderStatus || "processing",
           paymentMethod: o.paymentMethod || "cod",
         })) as IOrder[];
+      } else {
+        // Seed initial orders into MongoDB
+        try {
+          await OrderModel.insertMany(memoryOrders);
+          const initial = await OrderModel.find({
+            orderNumber: { $exists: true, $regex: /^TBH/ },
+          })
+            .sort({ createdAt: -1 })
+            .lean();
+          return toPlain(initial).map((o: any) => ({
+            ...o,
+            _id: String(o._id),
+          })) as IOrder[];
+        } catch {}
       }
     } catch (e) {
       console.error("Error fetching orders from MongoDB:", e);
@@ -706,14 +1171,16 @@ export async function updateOrderStatus(
   orderNumber: string,
   status: OrderStatus,
   trackingNumber?: string,
-  internalNotes?: string
+  internalNotes?: string,
+  paymentStatus?: PaymentStatus
 ): Promise<IOrder | null> {
   const db = await connectDB();
   if (db) {
     try {
       const updatePayload: Record<string, unknown> = { orderStatus: status };
-      if (trackingNumber) updatePayload.trackingNumber = trackingNumber;
-      if (internalNotes) updatePayload.internalNotes = internalNotes;
+      if (trackingNumber !== undefined) updatePayload.trackingNumber = trackingNumber;
+      if (internalNotes !== undefined) updatePayload.internalNotes = internalNotes;
+      if (paymentStatus !== undefined) updatePayload.paymentStatus = paymentStatus;
       const updated = await OrderModel.findOneAndUpdate({ orderNumber }, updatePayload, { new: true }).lean();
       if (updated) return { ...updated, _id: String(updated._id) } as unknown as IOrder;
     } catch (e) {
@@ -724,11 +1191,31 @@ export async function updateOrderStatus(
   const order = memoryOrders.find((o) => o.orderNumber === orderNumber);
   if (order) {
     order.orderStatus = status;
-    if (trackingNumber) order.trackingNumber = trackingNumber;
-    if (internalNotes) order.internalNotes = internalNotes;
+    if (trackingNumber !== undefined) order.trackingNumber = trackingNumber;
+    if (internalNotes !== undefined) order.internalNotes = internalNotes;
+    if (paymentStatus !== undefined) order.paymentStatus = paymentStatus;
     return order;
   }
   return null;
+}
+
+export async function deleteOrder(orderNumber: string): Promise<boolean> {
+  const db = await connectDB();
+  if (db) {
+    try {
+      await OrderModel.findOneAndDelete({
+        $or: [{ orderNumber }, { _id: orderNumber }],
+      });
+      return true;
+    } catch (e) {
+      console.error("Error deleting order in MongoDB:", e);
+    }
+  }
+  const initLen = memoryOrders.length;
+  memoryOrders = memoryOrders.filter(
+    (o) => o.orderNumber !== orderNumber && o._id !== orderNumber
+  );
+  return memoryOrders.length < initLen;
 }
 
 export async function getCoupons(): Promise<ICoupon[]> {
@@ -796,6 +1283,58 @@ export async function createCoupon(data: Partial<ICoupon>): Promise<ICoupon> {
   }
   memoryCoupons.push(newCoupon);
   return newCoupon;
+}
+
+export async function updateCoupon(idOrCode: string, data: Partial<ICoupon>): Promise<ICoupon | null> {
+  const db = await connectDB();
+  if (db) {
+    try {
+      let updated;
+      if (mongoose.Types.ObjectId.isValid(idOrCode)) {
+        updated = await CouponModel.findByIdAndUpdate(idOrCode, data, { new: true });
+      } else {
+        updated = await CouponModel.findOneAndUpdate(
+          { $or: [{ _id: idOrCode }, { code: idOrCode.toUpperCase() }] },
+          data,
+          { new: true }
+        );
+      }
+      if (updated) return { ...updated.toObject(), _id: String(updated._id) } as unknown as ICoupon;
+    } catch (e) {
+      console.error("Error updating coupon in MongoDB:", e);
+    }
+  }
+  const idx = memoryCoupons.findIndex(
+    (c) => c._id === idOrCode || c.code.toUpperCase() === idOrCode.toUpperCase()
+  );
+  if (idx !== -1) {
+    memoryCoupons[idx] = { ...memoryCoupons[idx], ...data };
+    return memoryCoupons[idx];
+  }
+  return null;
+}
+
+export async function deleteCoupon(idOrCode: string): Promise<boolean> {
+  const db = await connectDB();
+  if (db) {
+    try {
+      if (mongoose.Types.ObjectId.isValid(idOrCode)) {
+        await CouponModel.findByIdAndDelete(idOrCode);
+      } else {
+        await CouponModel.findOneAndDelete({
+          $or: [{ _id: idOrCode }, { code: idOrCode.toUpperCase() }],
+        });
+      }
+      return true;
+    } catch (e) {
+      console.error("Error deleting coupon in MongoDB:", e);
+    }
+  }
+  const initLen = memoryCoupons.length;
+  memoryCoupons = memoryCoupons.filter(
+    (c) => c._id !== idOrCode && c.code.toUpperCase() !== idOrCode.toUpperCase()
+  );
+  return memoryCoupons.length < initLen;
 }
 
 export async function getBanners(): Promise<IBanner[]> {
@@ -906,6 +1445,38 @@ export async function createCustomOrder(data: Partial<CustomOrderRecord>): Promi
   }
   memoryCustomOrders.unshift(record);
   return record;
+}
+
+export async function updateCustomOrderStatus(orderNumber: string, status: string): Promise<boolean> {
+  const db = await connectDB();
+  if (db) {
+    try {
+      await CustomOrderModel.findOneAndUpdate({ orderNumber }, { status });
+    } catch (e) {
+      console.error("Error updating custom order in MongoDB:", e);
+    }
+  }
+  const mem = memoryCustomOrders.find((o) => o.orderNumber === orderNumber);
+  if (mem) {
+    mem.status = status as any;
+  }
+  return true;
+}
+
+export async function deleteCustomOrder(orderNumber: string): Promise<boolean> {
+  const db = await connectDB();
+  if (db) {
+    try {
+      await CustomOrderModel.findOneAndDelete({ orderNumber });
+    } catch (e) {
+      console.error("Error deleting custom order in MongoDB:", e);
+    }
+  }
+  const idx = memoryCustomOrders.findIndex((o) => o.orderNumber === orderNumber);
+  if (idx !== -1) {
+    memoryCustomOrders.splice(idx, 1);
+  }
+  return true;
 }
 
 export async function getSiteSettings(): Promise<ISiteSettings> {

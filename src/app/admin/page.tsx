@@ -3,25 +3,32 @@
 import React, { useEffect, useState, useMemo } from "react";
 import Link from "next/link";
 import {
-  DollarSign,
+  ArrowUpRight,
+  TrendingUp,
+  ArrowRightLeft,
+  Plus,
+  ArrowDownLeft,
+  CreditCard,
+  Banknote,
+  Sparkles,
   ShoppingBag,
   Package,
   AlertTriangle,
-  ArrowUpRight,
-  TrendingUp,
+  Search,
+  Filter,
+  CheckCircle2,
   Clock,
-  Sparkles,
+  Calendar,
+  ChevronDown,
   ExternalLink,
   Store,
-  Plus,
-  CheckCircle2,
   Tag,
   Eye,
   Edit3,
 } from "lucide-react";
 import {
-  AreaChart,
-  Area,
+  BarChart,
+  Bar,
   XAxis,
   YAxis,
   Tooltip,
@@ -31,14 +38,14 @@ import {
 import { useAuth } from "@/context/AuthContext";
 import { IProduct, IBrand } from "@/types";
 
-const SALES_DATA = [
-  { day: "Mon", sales: 24500 },
-  { day: "Tue", sales: 38900 },
-  { day: "Wed", sales: 42100 },
-  { day: "Thu", sales: 51200 },
-  { day: "Fri", sales: 68400 },
-  { day: "Sat", sales: 94500 },
-  { day: "Sun", sales: 86300 },
+const PROFIT_LOSS_DATA = [
+  { day: "Mon", profit: 34000, orders: 12000 },
+  { day: "Tue", profit: 48000, orders: 19000 },
+  { day: "Wed", profit: 41000, orders: 15000 },
+  { day: "Thu", profit: 55000, orders: 22000 },
+  { day: "Fri", profit: 69000, orders: 27000 },
+  { day: "Sat", profit: 89000, orders: 36000 },
+  { day: "Sun", profit: 78000, orders: 31000 },
 ];
 
 export default function AdminDashboardPage() {
@@ -50,6 +57,45 @@ export default function AdminDashboardPage() {
   const [products, setProducts] = useState<IProduct[]>([]);
   const [brandData, setBrandData] = useState<IBrand | null>(null);
   const [loading, setLoading] = useState(true);
+  const [currency, setCurrency] = useState("LKR");
+  const [searchActivity, setSearchActivity] = useState("");
+  const [currentDate, setCurrentDate] = useState("");
+  const [currentTime, setCurrentTime] = useState("");
+  const [greeting, setGreeting] = useState("Good morning");
+
+  useEffect(() => {
+    function updateClock() {
+      const now = new Date();
+      const hour = now.getHours();
+      if (hour < 12) {
+        setGreeting("Good morning");
+      } else if (hour < 17) {
+        setGreeting("Good afternoon");
+      } else {
+        setGreeting("Good evening");
+      }
+
+      setCurrentDate(
+        now.toLocaleDateString("en-US", {
+          weekday: "short",
+          day: "numeric",
+          month: "short",
+          year: "numeric",
+        })
+      );
+      setCurrentTime(
+        now.toLocaleTimeString("en-US", {
+          hour: "2-digit",
+          minute: "2-digit",
+          second: "2-digit",
+          hour12: true,
+        })
+      );
+    }
+    updateClock();
+    const timer = setInterval(updateClock, 1000);
+    return () => clearInterval(timer);
+  }, []);
 
   useEffect(() => {
     async function loadStats() {
@@ -429,7 +475,7 @@ export default function AdminDashboardPage() {
                 {brandProducts.length === 0 && (
                   <tr>
                     <td colSpan={5} className="py-8 text-center text-neutral-500">
-                      No products added for {brandSlug.toUpperCase()} yet. Click "Add New Brand Product" above to publish your first item!
+                      No products added for {brandSlug.toUpperCase()} yet. Click &quot;Add New Brand Product&quot; above to publish your first item!
                     </td>
                   </tr>
                 )}
@@ -442,239 +488,339 @@ export default function AdminDashboardPage() {
   }
 
   // Superadmin view (Default)
+  const totalBalance = stats?.totalRevenue || 135669;
+
   return (
-    <div className="space-y-8">
-      {/* Title */}
+    <div className="space-y-6">
+      {/* 1. Header Greeting (Time-relevant & Realtime Clock) */}
       <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4">
         <div>
-          <h1 className="text-2xl font-black uppercase tracking-wider text-white">
-            Performance Overview
+          <h1 className="text-2xl sm:text-3xl font-black tracking-tight text-neutral-900">
+            {greeting}, {user?.name || "TBH Executive Admin"}
           </h1>
-          <p className="text-xs text-neutral-400 mt-0.5">
-            Real-time sales analytics and inventory movement.
+          <p className="text-xs text-neutral-500 mt-1 font-medium">
+            Stay on top of your tasks, monitor progress, and track status.
           </p>
         </div>
 
-        <div className="flex items-center gap-2">
-          <Link
-            href="/admin/products"
-            className="bg-white text-black text-xs font-black uppercase tracking-wider px-4 py-2 rounded-xl hover:bg-neutral-200 transition-colors shadow-xs"
-          >
-            + New Product
-          </Link>
+        {/* Realtime Live Date & Time Widget (Without + Icon) */}
+        <div className="flex items-center">
+          <div className="bg-white border border-neutral-300 shadow-xs px-3.5 py-2 rounded-2xl flex items-center gap-2.5">
+            <div className="flex items-center gap-1.5 text-xs font-bold text-neutral-800">
+              <span className="w-2 h-2 rounded-full bg-emerald-500 animate-pulse" />
+              <Calendar className="w-3.5 h-3.5 text-neutral-500" />
+              <span>{currentDate || "Loading date..."}</span>
+            </div>
+            <div className="h-4 w-px bg-neutral-200" />
+            <div className="flex items-center gap-1.5 font-mono text-xs font-black text-neutral-900 bg-neutral-100 border border-neutral-200 px-2.5 py-1 rounded-xl">
+              <Clock className="w-3.5 h-3.5 text-neutral-500" />
+              <span>{currentTime || "00:00:00"}</span>
+            </div>
+          </div>
         </div>
       </div>
 
-      {/* 4 Metric KPI Cards */}
-      <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4">
-        {/* Total Revenue */}
-        <div className="bg-neutral-900 border border-neutral-800 rounded-2xl p-5 shadow-xs">
-          <div className="flex items-center justify-between text-neutral-400 text-xs font-bold uppercase tracking-wider">
-            <span>Gross Revenue</span>
-            <div className="w-8 h-8 rounded-lg bg-neutral-800 flex items-center justify-center text-white">
-              <DollarSign className="w-4 h-4 text-emerald-400" />
-            </div>
-          </div>
-          <div className="text-2xl font-black text-white mt-3">
-            Rs. {stats?.totalRevenue ? stats.totalRevenue.toLocaleString() : "135,669"}
-          </div>
-          <div className="flex items-center gap-1 text-[11px] text-emerald-400 mt-1 font-bold">
-            <TrendingUp className="w-3.5 h-3.5" />
-            <span>+18.4% from last week</span>
-          </div>
-        </div>
-
-        {/* Total Orders */}
-        <div className="bg-neutral-900 border border-neutral-800 rounded-2xl p-5 shadow-xs">
-          <div className="flex items-center justify-between text-neutral-400 text-xs font-bold uppercase tracking-wider">
-            <span>Total Orders</span>
-            <div className="w-8 h-8 rounded-lg bg-neutral-800 flex items-center justify-center text-white">
-              <ShoppingBag className="w-4 h-4 text-blue-400" />
-            </div>
-          </div>
-          <div className="text-2xl font-black text-white mt-3">
-            {stats?.totalOrders !== undefined ? stats.totalOrders : 2} Orders
-          </div>
-          <span className="text-[11px] text-neutral-400 mt-1 block font-medium">
-            {stats?.pendingOrders || 1} pending fulfillment
-          </span>
-        </div>
-
-        {/* Active Products */}
-        <div className="bg-neutral-900 border border-neutral-800 rounded-2xl p-5 shadow-xs">
-          <div className="flex items-center justify-between text-neutral-400 text-xs font-bold uppercase tracking-wider">
-            <span>Catalog Items</span>
-            <div className="w-8 h-8 rounded-lg bg-neutral-800 flex items-center justify-center text-white">
-              <Package className="w-4 h-4 text-purple-400" />
-            </div>
-          </div>
-          <div className="text-2xl font-black text-white mt-3">
-            {stats?.activeProducts !== undefined ? stats.activeProducts : 16} SKUs
-          </div>
-          <span className="text-[11px] text-emerald-400 mt-1 block font-bold">
-            All active &amp; ready for checkout
-          </span>
-        </div>
-
-        {/* Low Stock Alerts */}
-        <div className="bg-neutral-900 border border-neutral-800 rounded-2xl p-5 shadow-xs">
-          <div className="flex items-center justify-between text-neutral-400 text-xs font-bold uppercase tracking-wider">
-            <span>Low Stock Items</span>
-            <div className="w-8 h-8 rounded-lg bg-neutral-800 flex items-center justify-center text-white">
-              <AlertTriangle className="w-4 h-4 text-amber-400" />
-            </div>
-          </div>
-          <div className="text-2xl font-black text-white mt-3">
-            {stats?.lowStockCount !== undefined ? stats.lowStockCount : 1} Items
-          </div>
-          <span className="text-[11px] text-amber-400 mt-1 block font-bold">
-            Waves Poncho Ash (1 left)
-          </span>
-        </div>
-      </div>
-
-      {/* Revenue Chart Section (Recharts) */}
-      <div className="bg-neutral-900 border border-neutral-800 rounded-3xl p-6 shadow-xs">
-        <div className="flex items-center justify-between mb-6">
+      {/* 2. Top Bento Grid (3 Balanced Main Blocks) */}
+      <div className="grid grid-cols-1 lg:grid-cols-12 gap-5 sm:gap-6 items-stretch">
+        {/* Block A: Total Balance & Wallets (Col Span 4) */}
+        <div className="lg:col-span-4 bg-white border border-neutral-300 shadow-[0_2px_12px_rgba(0,0,0,0.04)] rounded-3xl p-6 flex flex-col justify-between">
           <div>
-            <h2 className="text-sm font-black uppercase tracking-wider text-white">
-              Weekly Sales Volume (LKR)
-            </h2>
-            <p className="text-xs text-neutral-400">Aggregate daily revenue performance</p>
+            {/* Header: Label + Currency Selector */}
+            <div className="flex items-center justify-between">
+              <span className="text-xs font-bold text-neutral-500">Total Balance</span>
+              <button
+                type="button"
+                className="flex items-center gap-1 text-[11px] font-black uppercase bg-white hover:bg-neutral-100 text-neutral-900 border border-neutral-300 hover:border-black px-2.5 py-1 rounded-full shadow-xs transition-colors cursor-pointer"
+              >
+                <span>🇱🇰 {currency}</span>
+                <ChevronDown className="w-3 h-3 text-neutral-400" />
+              </button>
+            </div>
+
+            {/* Big Amount */}
+            <div className="text-3xl sm:text-4xl font-black text-neutral-900 mt-3 tracking-tight">
+              Rs. {totalBalance.toLocaleString()}.00
+            </div>
+
+            {/* Trend Indicator */}
+            <div className="flex items-center gap-1.5 text-xs text-emerald-600 font-bold mt-1.5">
+              <TrendingUp className="w-3.5 h-3.5" />
+              <span>+18.4% from last month</span>
+            </div>
+
+            {/* Action Buttons: Solid Black Primary + Black-Outlined Secondary */}
+            <div className="grid grid-cols-2 gap-3 mt-6">
+              <Link
+                href="/admin/products"
+                className="bg-black hover:bg-neutral-800 text-white border border-black rounded-2xl py-3 px-4 text-xs font-bold text-center flex items-center justify-center gap-2 shadow-sm transition-all cursor-pointer"
+              >
+                <ArrowRightLeft className="w-3.5 h-3.5" />
+                <span>Transfer</span>
+              </Link>
+              <Link
+                href="/admin/orders"
+                className="bg-white hover:bg-black hover:text-white text-black border-2 border-black rounded-2xl py-3 px-4 text-xs font-bold text-center flex items-center justify-center gap-2 shadow-xs transition-all cursor-pointer"
+              >
+                <ArrowDownLeft className="w-3.5 h-3.5" />
+                <span>Request</span>
+              </Link>
+            </div>
           </div>
-          <span className="text-xs font-bold bg-neutral-800 text-neutral-300 px-3 py-1 rounded-full">
-            Last 7 Days
-          </span>
+
+          {/* Sub-Wallets / Payment Channels Breakdown */}
+          <div className="mt-6 pt-5 border-t border-neutral-100">
+            <span className="text-[11px] font-bold text-neutral-400 uppercase tracking-wider block mb-3">
+              Payment Channels
+            </span>
+            <div className="grid grid-cols-3 gap-2">
+              {/* Card Wallet */}
+              <div className="bg-neutral-50 hover:bg-white border border-neutral-250 hover:border-black rounded-2xl p-2.5 text-center shadow-xs transition-all cursor-pointer">
+                <span className="text-[10px] font-bold text-neutral-500 block truncate">Online Card</span>
+                <strong className="text-xs font-black text-neutral-900 mt-1 block">Rs. 78,500</strong>
+              </div>
+              {/* COD Wallet */}
+              <div className="bg-neutral-50 hover:bg-white border border-neutral-250 hover:border-black rounded-2xl p-2.5 text-center shadow-xs transition-all cursor-pointer">
+                <span className="text-[10px] font-bold text-neutral-500 block truncate">COD Islandwide</span>
+                <strong className="text-xs font-black text-neutral-900 mt-1 block">Rs. 42,169</strong>
+              </div>
+              {/* Koko Wallet */}
+              <div className="bg-neutral-50 hover:bg-white border border-neutral-250 hover:border-black rounded-2xl p-2.5 text-center shadow-xs transition-all cursor-pointer">
+                <span className="text-[10px] font-bold text-neutral-500 block truncate">Koko / Mint</span>
+                <strong className="text-xs font-black text-neutral-900 mt-1 block">Rs. 15,000</strong>
+              </div>
+            </div>
+          </div>
         </div>
 
-        <div className="h-64 w-full">
-          <ResponsiveContainer width="100%" height="100%">
-            <AreaChart data={SALES_DATA}>
-              <defs>
-                <linearGradient id="salesGradient" x1="0" y1="0" x2="0" y2="1">
-                  <stop offset="5%" stopColor="#ffffff" stopOpacity={0.4} />
-                  <stop offset="95%" stopColor="#ffffff" stopOpacity={0} />
-                </linearGradient>
-              </defs>
-              <CartesianGrid strokeDasharray="3 3" stroke="#262626" />
-              <XAxis dataKey="day" stroke="#737373" fontSize={11} />
-              <YAxis
-                stroke="#737373"
-                fontSize={11}
-                tickFormatter={(v) => `Rs ${v / 1000}k`}
-              />
-              <Tooltip
-                contentStyle={{
-                  backgroundColor: "#000000",
-                  borderColor: "#262626",
-                  borderRadius: "12px",
-                  fontSize: "12px",
-                  color: "#ffffff",
-                }}
-              />
-              <Area
-                type="monotone"
-                dataKey="sales"
-                stroke="#ffffff"
-                strokeWidth={2}
-                fillOpacity={1}
-                fill="url(#salesGradient)"
-              />
-            </AreaChart>
-          </ResponsiveContainer>
+        {/* Block B: 2x2 Middle Cards Grid (Col Span 4) */}
+        <div className="lg:col-span-4 grid grid-cols-2 gap-4">
+          {/* Card 1: Featured Orange Accent Card */}
+          <div className="col-span-1 bg-gradient-to-br from-[#ff5b33] to-[#eb441b] text-white border-2 border-[#e03d15] rounded-3xl p-4 sm:p-5 shadow-sm flex flex-col justify-between min-h-[140px]">
+            <div className="flex items-center justify-between text-[11px] font-bold opacity-90">
+              <span>Total Earnings</span>
+              <Sparkles className="w-3.5 h-3.5" />
+            </div>
+            <div className="text-2xl font-black mt-2 tracking-tight">
+              Rs. {Math.round(totalBalance * 0.65).toLocaleString()}
+            </div>
+            <span className="text-[10px] font-extrabold bg-black/20 border border-white/30 px-2.5 py-0.5 rounded-full inline-block mt-2 self-start shadow-xs">
+              +12% This month
+            </span>
+          </div>
+
+          {/* Card 2: Total Spending / Shipping Fees */}
+          <div className="col-span-1 bg-white border border-neutral-300 shadow-[0_2px_12px_rgba(0,0,0,0.04)] rounded-3xl p-4 sm:p-5 flex flex-col justify-between min-h-[140px]">
+            <div className="flex items-center justify-between text-[11px] font-bold text-neutral-500">
+              <span>Total Spending</span>
+              <Banknote className="w-3.5 h-3.5 text-neutral-400" />
+            </div>
+            <div className="text-2xl font-black text-neutral-900 mt-2 tracking-tight">
+              Rs. 12,450
+            </div>
+            <span className="text-[10px] font-extrabold bg-neutral-100 border border-neutral-250 text-neutral-500 px-2.5 py-0.5 rounded-full inline-block mt-2 self-start">
+              -5% This month
+            </span>
+          </div>
+
+          {/* Card 3: Total Income / Orders */}
+          <div className="col-span-1 bg-white border border-neutral-300 shadow-[0_2px_12px_rgba(0,0,0,0.04)] rounded-3xl p-4 sm:p-5 flex flex-col justify-between min-h-[140px]">
+            <div className="flex items-center justify-between text-[11px] font-bold text-neutral-500">
+              <span>Total Orders</span>
+              <ShoppingBag className="w-3.5 h-3.5 text-neutral-400" />
+            </div>
+            <div className="text-2xl font-black text-neutral-900 mt-2 tracking-tight">
+              {stats?.totalOrders || 24}
+            </div>
+            <span className="text-[10px] font-bold bg-emerald-50 border border-emerald-300 text-emerald-800 px-2.5 py-0.5 rounded-full inline-block mt-2 self-start">
+              +8% This month
+            </span>
+          </div>
+
+          {/* Card 4: Total Revenue / Active SKUs */}
+          <div className="col-span-1 bg-white border border-neutral-300 shadow-[0_2px_12px_rgba(0,0,0,0.04)] rounded-3xl p-4 sm:p-5 flex flex-col justify-between min-h-[140px]">
+            <div className="flex items-center justify-between text-[11px] font-bold text-neutral-500">
+              <span>Active SKUs</span>
+              <Package className="w-3.5 h-3.5 text-neutral-400" />
+            </div>
+            <div className="text-2xl font-black text-neutral-900 mt-2 tracking-tight">
+              {stats?.activeProducts || 16}
+            </div>
+            <span className="text-[10px] font-bold bg-emerald-50 border border-emerald-300 text-emerald-800 px-2.5 py-0.5 rounded-full inline-block mt-2 self-start">
+              100% active
+            </span>
+          </div>
+        </div>
+
+        {/* Block C: Right Performance Stacked Bar Chart (Col Span 4) */}
+        <div className="lg:col-span-4 bg-white border border-neutral-300 shadow-[0_2px_12px_rgba(0,0,0,0.04)] rounded-3xl p-6 flex flex-col justify-between">
+          <div>
+            <div className="flex items-center justify-between mb-1">
+              <h2 className="text-sm font-black text-neutral-900">Total Income</h2>
+              <div className="flex items-center gap-2 text-[10px] font-bold">
+                <span className="flex items-center gap-1.5 bg-neutral-100 border border-neutral-250 px-2.5 py-1 rounded-full text-[#ff5b33]">
+                  <span className="w-2 h-2 rounded-full bg-[#ff5b33]" />
+                  Profit
+                </span>
+                <span className="flex items-center gap-1.5 bg-neutral-100 border border-neutral-250 px-2.5 py-1 rounded-full text-black">
+                  <span className="w-2 h-2 rounded-full bg-black" />
+                  Orders
+                </span>
+              </div>
+            </div>
+            <p className="text-[11px] text-neutral-400">
+              View your streams at a certain market of loss
+            </p>
+
+            <span className="text-xs font-bold text-neutral-800 block mt-3">
+              Profit and Loss
+            </span>
+          </div>
+
+          {/* Vertical Stacked Capsule Bar Chart */}
+          <div className="h-44 w-full mt-4">
+            <ResponsiveContainer width="100%" height="100%">
+              <BarChart data={PROFIT_LOSS_DATA} barGap={4}>
+                <CartesianGrid strokeDasharray="3 3" vertical={false} stroke="#f0f0f0" />
+                <XAxis dataKey="day" stroke="#a3a3a3" fontSize={10} tickLine={false} axisLine={false} />
+                <YAxis
+                  stroke="#a3a3a3"
+                  fontSize={10}
+                  tickLine={false}
+                  axisLine={false}
+                  tickFormatter={(v) => `${v / 1000}k`}
+                />
+                <Tooltip
+                  cursor={{ fill: "#f8f9fa" }}
+                  contentStyle={{
+                    backgroundColor: "#ffffff",
+                    borderColor: "#e5e7eb",
+                    borderRadius: "16px",
+                    fontSize: "11px",
+                    boxShadow: "0 4px 12px rgba(0,0,0,0.05)",
+                  }}
+                />
+                <Bar dataKey="orders" fill="#000000" radius={[6, 6, 0, 0]} barSize={14} />
+                <Bar dataKey="profit" fill="#ff5b33" radius={[6, 6, 0, 0]} barSize={14} />
+              </BarChart>
+            </ResponsiveContainer>
+          </div>
         </div>
       </div>
 
-      {/* Recent Orders & Low Stock Tables Grid */}
-      <div className="grid grid-cols-1 lg:grid-cols-12 gap-8">
-        {/* Recent Orders Table */}
-        <div className="lg:col-span-8 bg-neutral-900 border border-neutral-800 rounded-3xl p-6 shadow-xs">
-          <div className="flex items-center justify-between mb-4">
-            <h2 className="text-sm font-black uppercase tracking-wider text-white">
-              Recent Orders
-            </h2>
+      {/* 3. Bottom Row: Spending Limit & Recent Activities Table */}
+      <div className="grid grid-cols-1 lg:grid-cols-12 gap-6 items-start">
+        {/* Bottom Left: Monthly Spending Limit (Col Span 4) */}
+        <div className="lg:col-span-4 bg-white border border-neutral-300 shadow-[0_2px_12px_rgba(0,0,0,0.04)] rounded-3xl p-6 space-y-4">
+          <div className="flex items-center justify-between">
+            <h3 className="text-xs font-bold text-neutral-500">Monthly Spending Limit</h3>
+            <span className="text-[10px] font-bold text-neutral-400">Budget Target</span>
+          </div>
+
+          <div className="pt-2">
+            {/* Visual Progress Bar (Orange accent from image) */}
+            <div className="w-full h-3 bg-neutral-100 rounded-full overflow-hidden p-0.5 shadow-inner">
+              <div
+                className="h-full bg-[#ff5b33] rounded-full transition-all duration-500 shadow-sm"
+                style={{ width: "45%" }}
+              />
+            </div>
+            <div className="flex items-center justify-between text-xs font-black text-neutral-900 mt-3">
+              <span>Rs. 135,669.00</span>
+              <span className="text-neutral-400 font-medium">Rs. 300,000.00</span>
+            </div>
+          </div>
+
+          <div className="pt-2 border-t border-neutral-100">
+            <div className="flex items-center justify-between text-xs">
+              <span className="text-neutral-500 font-medium">Low Stock Warnings</span>
+              <span className="px-2.5 py-0.5 rounded-full text-[10px] font-black bg-amber-50 text-amber-800 border border-amber-300">
+                {stats?.lowStockCount || 1} Alert
+              </span>
+            </div>
             <Link
-              href="/admin/orders"
-              className="text-xs font-bold text-neutral-400 hover:text-white flex items-center gap-1"
+              href="/admin/inventory"
+              className="mt-3 block w-full bg-black hover:bg-neutral-800 text-white border border-black text-center py-2.5 rounded-2xl text-xs font-bold shadow-sm transition-all cursor-pointer"
             >
-              <span>View All</span>
-              <ArrowUpRight className="w-3.5 h-3.5" />
+              Audit Inventory
             </Link>
           </div>
+        </div>
 
+        {/* Bottom Right: Recent Activities / Orders Table (Col Span 8) */}
+        <div className="lg:col-span-8 bg-white border border-neutral-300 shadow-[0_2px_12px_rgba(0,0,0,0.04)] rounded-3xl p-6">
+          {/* Header & Search */}
+          <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-3 mb-5">
+            <div>
+              <h2 className="text-sm font-black text-neutral-900">Recent Activities</h2>
+              <p className="text-[11px] text-neutral-400">Latest store transactions and fulfillments</p>
+            </div>
+
+            <div className="flex items-center gap-2">
+              <div className="relative flex items-center">
+                <Search className="w-3.5 h-3.5 text-neutral-400 absolute left-3" />
+                <input
+                  type="text"
+                  placeholder="Search..."
+                  value={searchActivity}
+                  onChange={(e) => setSearchActivity(e.target.value)}
+                  className="bg-white border border-neutral-300 focus:border-black text-neutral-900 placeholder-neutral-400 text-xs rounded-full pl-8 pr-3 py-1.5 focus:outline-hidden font-medium shadow-xs transition-colors w-36 sm:w-48"
+                />
+              </div>
+
+              <Link
+                href="/admin/orders"
+                className="bg-white hover:bg-black hover:text-white text-black border border-neutral-300 hover:border-black px-3.5 py-1.5 rounded-full text-xs font-bold flex items-center gap-1.5 shadow-xs transition-all cursor-pointer"
+              >
+                <Filter className="w-3 h-3 text-neutral-500" />
+                <span>Filter</span>
+              </Link>
+            </div>
+          </div>
+
+          {/* Table */}
           <div className="overflow-x-auto">
-            <table className="w-full text-left text-xs text-neutral-300">
-              <thead className="text-[10px] uppercase font-bold text-neutral-500 border-b border-neutral-800">
+            <table className="w-full text-left text-xs">
+              <thead className="text-[10px] uppercase font-bold text-neutral-400 border-b border-neutral-100">
                 <tr>
-                  <th className="py-2.5">Order</th>
-                  <th className="py-2.5">Customer</th>
-                  <th className="py-2.5">Method</th>
-                  <th className="py-2.5">Total</th>
+                  <th className="py-2.5">Order ID</th>
+                  <th className="py-2.5">Activity</th>
+                  <th className="py-2.5">Price</th>
                   <th className="py-2.5">Status</th>
+                  <th className="py-2.5">Date</th>
                 </tr>
               </thead>
-              <tbody className="divide-y divide-neutral-800/60 font-medium">
+              <tbody className="divide-y divide-neutral-100 font-medium text-neutral-700">
                 {stats?.recentOrders?.map((ord: any) => (
-                  <tr key={ord.orderNumber || ord._id} className="hover:bg-neutral-800/40">
-                    <td className="py-3 font-bold text-white">{ord.orderNumber || "TBH-ORDER"}</td>
-                    <td className="py-3">{ord.customer?.name || "Customer"}</td>
-                    <td className="py-3 uppercase text-[10px]">{ord.paymentMethod || "COD"}</td>
-                    <td className="py-3 font-bold text-white">Rs. {(ord.total || 0).toLocaleString()}</td>
+                  <tr key={ord.orderNumber || ord._id} className="hover:bg-neutral-50/80 transition-colors">
+                    <td className="py-3 font-bold text-neutral-900">{ord.orderNumber || "TBH-90214"}</td>
+                    <td className="py-3 flex items-center gap-2">
+                      <div className="w-6 h-6 rounded-lg bg-neutral-100 flex items-center justify-center text-neutral-600 text-[10px] font-black">
+                        {(ord.customer?.name || "C")[0]}
+                      </div>
+                      <span className="truncate max-w-[140px]">{ord.customer?.name || "Customer Purchase"}</span>
+                    </td>
+                    <td className="py-3 font-bold text-neutral-900">
+                      Rs. {(ord.total || 2950).toLocaleString()}
+                    </td>
                     <td className="py-3">
-                      <span className="px-2 py-0.5 rounded-full text-[10px] font-black uppercase bg-neutral-800 text-neutral-200">
-                        {ord.orderStatus || "Processing"}
+                      <span className="inline-flex items-center gap-1 px-2.5 py-0.5 rounded-full text-[10px] font-bold bg-emerald-50 text-emerald-700 border border-emerald-200/80">
+                        <span className="w-1.5 h-1.5 rounded-full bg-emerald-500" />
+                        {ord.orderStatus || "Completed"}
                       </span>
+                    </td>
+                    <td className="py-3 text-[11px] text-neutral-400">
+                      {ord.createdAt ? new Date(ord.createdAt).toLocaleDateString() : "Today"}
                     </td>
                   </tr>
                 )) || (
                   <tr>
-                    <td colSpan={5} className="py-4 text-center text-neutral-500">
-                      Loading orders...
+                    <td colSpan={5} className="py-6 text-center text-neutral-400">
+                      Loading recent activities...
                     </td>
                   </tr>
                 )}
               </tbody>
             </table>
-          </div>
-        </div>
-
-        {/* Low Stock Warning */}
-        <div className="lg:col-span-4 bg-neutral-900 border border-neutral-800 rounded-3xl p-6 shadow-xs space-y-4">
-          <div className="flex items-center justify-between">
-            <h2 className="text-sm font-black uppercase tracking-wider text-white">
-              Low Stock Alert
-            </h2>
-            <span className="w-2 h-2 rounded-full bg-amber-400 animate-pulse" />
-          </div>
-
-          <div className="space-y-3 text-xs">
-            {stats?.lowStockProducts?.map((p: any) => (
-              <div
-                key={p.sku}
-                className="p-3 rounded-xl bg-neutral-950 border border-neutral-800 flex items-center justify-between"
-              >
-                <div>
-                  <strong className="text-white block font-bold truncate max-w-[160px]">
-                    {p.name}
-                  </strong>
-                  <span className="text-[10px] text-neutral-400 uppercase">SKU: {p.sku}</span>
-                </div>
-                <span className="px-2.5 py-1 rounded-full text-[11px] font-black bg-amber-950 text-amber-400 border border-amber-800">
-                  {p.stock} left
-                </span>
-              </div>
-            )) || (
-              <div className="text-neutral-500 text-center py-4">All stock levels healthy.</div>
-            )}
-          </div>
-
-          <div className="pt-2">
-            <Link
-              href="/admin/inventory"
-              className="w-full block bg-neutral-800 hover:bg-neutral-700 text-white text-center py-2.5 rounded-xl text-xs font-bold uppercase tracking-wider transition-colors"
-            >
-              Adjust Inventory
-            </Link>
           </div>
         </div>
       </div>

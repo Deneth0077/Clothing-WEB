@@ -19,8 +19,17 @@ export async function POST(req: NextRequest) {
       return NextResponse.json({ message: "Cart cannot be empty" }, { status: 400 });
     }
 
-    if (!body.customer?.name || !body.customer?.phone || !body.shippingAddress?.street) {
+    const street =
+      body.shippingAddress?.street ||
+      body.shippingAddress?.addressLine1 ||
+      body.shippingAddress?.address;
+
+    if (!body.customer?.name || !body.customer?.phone || !street) {
       return NextResponse.json({ message: "Customer and shipping details are required" }, { status: 400 });
+    }
+
+    if (!body.shippingAddress.street) {
+      body.shippingAddress.street = street;
     }
 
     const order = await createOrder(body);
